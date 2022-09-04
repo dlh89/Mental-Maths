@@ -7,14 +7,12 @@
         display: none;
     }
 
-    .js-question {
+    .question {
         font-size: 34px;
         font-weight: bold;
     }
 
-    .js-answer {
-        font-size: 34px;
-        font-weight: bold;
+    .question__answer {
         color: green;
     }
 </style>
@@ -41,10 +39,11 @@
     </form>
 </div>
 <div class="js-game">
-    <div class="js-question"></div>
+    <div class="question">
+        <span class="js-question"></span> = <span class="js-answer-text question__answer"></span>
+    </div>
     <button class="js-show-answer">Show answer</button>
     <div class="js-answer">
-        <div class="js-answer-text"></div>
         <button class="js-next-question">Next</button>
     </div>
 </div>

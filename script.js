@@ -81,12 +81,14 @@ function renderQuestion(question) {
     document.querySelector('.js-question').textContent = questionText;
     document.querySelector('.js-show-answer').style.display = 'block';
     document.querySelector('.js-answer').style.display = 'none';
+    document.querySelector('.js-answer-text').style.display = 'none';
 }
 
 function renderAnswer(question) {
     var answer = getAnswer(question);
     document.querySelector('.js-show-answer').style.display = 'none';
     document.querySelector('.js-answer').style.display = 'block';
+    document.querySelector('.js-answer-text').style.display = 'inline-block';
     document.querySelector('.js-answer-text').textContent = answer;
     document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion(question.numDigits) });
 }
