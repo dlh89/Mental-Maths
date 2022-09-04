@@ -1,0 +1,51 @@
+<style>
+    .js-game {
+        display: none;
+    }
+
+    .js-answer {
+        display: none;
+    }
+
+    .js-question {
+        font-size: 34px;
+        font-weight: bold;
+    }
+
+    .js-answer {
+        font-size: 34px;
+        font-weight: bold;
+        color: green;
+    }
+</style>
+
+<h1>Mental Maths</h1>
+<div class="js-pre-start">
+    <form action="" class="js-start-form">
+        <fieldset>
+            <legend>Question types</legend>
+            <div>
+                <label for="multiplication">Multiplication</label>
+                <input type="checkbox" name="question_types" id="multiplication" value="multiplication" checked>
+            </div>
+            <div>
+                <label for="addition">Addition</label>
+                <input type="checkbox" name="question_types" id="addition" value="addition" checked>
+            </div>
+            <div>
+                <label for="subtraction">Subtraction</label>
+                <input type="checkbox" name="question_types" id="subtraction" value="subtraction" checked>
+            </div>
+        </fieldset>
+        <input type="submit" value="Start">
+    </form>
+</div>
+<div class="js-game">
+    <div class="js-question"></div>
+    <button class="js-show-answer">Show answer</button>
+    <div class="js-answer">
+        <div class="js-answer-text"></div>
+        <button class="js-next-question">Next</button>
+    </div>
+</div>
+<script src="script.js"></script>
