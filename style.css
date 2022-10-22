@@ -1,0 +1,16 @@
+.js-game {
+    display: none;
+}
+
+.js-answer {
+    display: none;
+}
+
+.question {
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.question__answer {
+    color: green;
+}
