@@ -10,18 +10,25 @@ function startGame(e) {
     e.preventDefault();
     var formData = new FormData(e.target);
     var questionTypes = formData.getAll('question_types');
+    var multiplicationDigits = formData.getAll('multiplication_digits');
+    var additionDigits = formData.getAll('addition_digits');
+    var subtractionDigits = formData.getAll('subtraction_digits');
 
     globals.game['questionTypes'] = questionTypes;
+    globals.game['multiplicationDigits'] = multiplicationDigits;
+    globals.game['additionDigits'] = additionDigits;
+    globals.game['subtractionDigits'] = subtractionDigits;
 
     document.querySelector('.js-pre-start').style.display = 'none';
     document.querySelector('.js-game').style.display = 'block';
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
 
-    newQuestion(2);
+    newQuestion();
 }
 
 function newQuestion(numDigits) {
-    var type = globals.game['questionTypes'][Math.floor(Math.random() * globals.game['questionTypes'].length)];
+    var type = getRandomElement(globals.game['questionTypes']);
+    var numDigits = getRandomElement(globals.game[type + 'Digits']);
     question = generateQuestion(type, numDigits);
     renderQuestion(question);
 }
@@ -51,7 +58,7 @@ function getNumber(numDigits) {
         number += getRandomDigit();
     }
 
-    return number;
+    return parseInt(number);
 }
 
 function getSymbol(type) {
@@ -90,7 +97,7 @@ function renderAnswer(question) {
     document.querySelector('.js-answer').style.display = 'block';
     document.querySelector('.js-answer-text').style.display = 'inline-block';
     document.querySelector('.js-answer-text').textContent = answer;
-    document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion(question.numDigits) });
+    document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion() });
 }
 
 function getAnswer(question) {
@@ -101,14 +108,18 @@ function getAnswer(question) {
             answer = question.first * question.second
             break;
         case 'addition':
-            answer = parseInt(question.first) + parseInt(question.second)
+            answer = question.first + question.second
             break;
         case 'subtraction':
-            answer = parseInt(question.first) - parseInt(question.second)
+            answer = question.first - question.second
             break;
         default:
             break;
     }
 
     return answer;
+}
+
+function getRandomElement(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
 }
