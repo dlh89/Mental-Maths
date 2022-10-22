@@ -1,5 +1,3 @@
-document.querySelector('.js-start-form').addEventListener('submit', startGame);
-
 var globals = {
     game: {
         questionTypes: [],
@@ -7,20 +5,17 @@ var globals = {
 }
 
 function startGame(e) {
-    e.preventDefault();
-    var formData = new FormData(e.target);
-    var questionTypes = formData.getAll('question_types');
-    var multiplicationDigits = formData.getAll('multiplication_digits');
-    var additionDigits = formData.getAll('addition_digits');
-    var subtractionDigits = formData.getAll('subtraction_digits');
+    const parsedUrl = new URL(window.location.href);
+    var questionTypes = parsedUrl.searchParams.getAll('question_types');
+    var multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
+    var additionDigits = parsedUrl.searchParams.getAll('addition_digits');
+    var subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
 
     globals.game['questionTypes'] = questionTypes;
     globals.game['multiplicationDigits'] = multiplicationDigits;
     globals.game['additionDigits'] = additionDigits;
     globals.game['subtractionDigits'] = subtractionDigits;
 
-    document.querySelector('.js-pre-start').style.display = 'none';
-    document.querySelector('.js-game').style.display = 'block';
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
 
     newQuestion();
@@ -123,3 +118,5 @@ function getAnswer(question) {
 function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
+
+startGame();
