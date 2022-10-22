@@ -1,71 +1,82 @@
-<link href="style.css" rel="stylesheet" />
-<h1>Mental Maths</h1>
-<div class="js-pre-start">
-    <form action="" class="js-start-form">
-        <fieldset>
-            <legend>Question types</legend>
-            <div>
-                <label for="multiplication">Multiplication</label>
-                <input type="checkbox" name="question_types" id="multiplication" value="multiplication" checked>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Maths</title>
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <h1>Mental Maths</h1>
+    <div class="js-pre-start">
+        <form action="" class="js-start-form">
             <fieldset>
-                <legend>Number of digits</legend>
+                <legend>Question types</legend>
                 <div>
-                    <label for="multiplication_1">1</label>
-                    <input type="checkbox" name="multiplication_digits" id="multiplication_1" value="1" checked>
-                    <label for="multiplication_2">2</label>
-                    <input type="checkbox" name="multiplication_digits" id="multiplication_2" value="2" checked>
-                    <label for="multiplication_3">3</label>
-                    <input type="checkbox" name="multiplication_digits" id="multiplication_3" value="3" checked>
-                    <label for="multiplication_4">4</label>
-                    <input type="checkbox" name="multiplication_digits" id="multiplication_4" value="4" checked>
+                    <label for="multiplication">Multiplication</label>
+                    <input type="checkbox" name="question_types" id="multiplication" value="multiplication" checked>
                 </div>
-            </fieldset>
-            <div>
-                <label for="addition">Addition</label>
-                <input type="checkbox" name="question_types" id="addition" value="addition" checked>
-            </div>
-            <fieldset>
-                <legend>Number of digits</legend>
+                <fieldset>
+                    <legend>Number of digits</legend>
+                    <div>
+                        <label for="multiplication_1">1</label>
+                        <input type="checkbox" name="multiplication_digits" id="multiplication_1" value="1" checked>
+                        <label for="multiplication_2">2</label>
+                        <input type="checkbox" name="multiplication_digits" id="multiplication_2" value="2" checked>
+                        <label for="multiplication_3">3</label>
+                        <input type="checkbox" name="multiplication_digits" id="multiplication_3" value="3" checked>
+                        <label for="multiplication_4">4</label>
+                        <input type="checkbox" name="multiplication_digits" id="multiplication_4" value="4" checked>
+                    </div>
+                </fieldset>
                 <div>
-                    <label for="addition_1">1</label>
-                    <input type="checkbox" name="addition_digits" id="addition_1" value="1" checked>
-                    <label for="addition_2">2</label>
-                    <input type="checkbox" name="addition_digits" id="addition_2" value="2" checked>
-                    <label for="addition_3">3</label>
-                    <input type="checkbox" name="addition_digits" id="addition_3" value="3" checked>
-                    <label for="addition_4">4</label>
-                    <input type="checkbox" name="addition_digits" id="addition_4" value="4" checked>
+                    <label for="addition">Addition</label>
+                    <input type="checkbox" name="question_types" id="addition" value="addition" checked>
                 </div>
-            </fieldset>
-            <div>
-                <label for="subtraction">Subtraction</label>
-                <input type="checkbox" name="question_types" id="subtraction" value="subtraction" checked>
-            </div>
-            <fieldset>
-                <legend>Number of digits</legend>
+                <fieldset>
+                    <legend>Number of digits</legend>
+                    <div>
+                        <label for="addition_1">1</label>
+                        <input type="checkbox" name="addition_digits" id="addition_1" value="1" checked>
+                        <label for="addition_2">2</label>
+                        <input type="checkbox" name="addition_digits" id="addition_2" value="2" checked>
+                        <label for="addition_3">3</label>
+                        <input type="checkbox" name="addition_digits" id="addition_3" value="3" checked>
+                        <label for="addition_4">4</label>
+                        <input type="checkbox" name="addition_digits" id="addition_4" value="4" checked>
+                    </div>
+                </fieldset>
                 <div>
-                    <label for="subtraction_1">1</label>
-                    <input type="checkbox" name="subtraction_digits" id="subtraction_1" value="1" checked>
-                    <label for="subtraction_2">2</label>
-                    <input type="checkbox" name="subtraction_digits" id="subtraction_2" value="2" checked>
-                    <label for="subtraction_3">3</label>
-                    <input type="checkbox" name="subtraction_digits" id="subtraction_3" value="3" checked>
-                    <label for="subtraction_4">4</label>
-                    <input type="checkbox" name="subtraction_digits" id="subtraction_4" value="4" checked>
+                    <label for="subtraction">Subtraction</label>
+                    <input type="checkbox" name="question_types" id="subtraction" value="subtraction" checked>
                 </div>
+                <fieldset>
+                    <legend>Number of digits</legend>
+                    <div>
+                        <label for="subtraction_1">1</label>
+                        <input type="checkbox" name="subtraction_digits" id="subtraction_1" value="1" checked>
+                        <label for="subtraction_2">2</label>
+                        <input type="checkbox" name="subtraction_digits" id="subtraction_2" value="2" checked>
+                        <label for="subtraction_3">3</label>
+                        <input type="checkbox" name="subtraction_digits" id="subtraction_3" value="3" checked>
+                        <label for="subtraction_4">4</label>
+                        <input type="checkbox" name="subtraction_digits" id="subtraction_4" value="4" checked>
+                    </div>
+                </fieldset>
             </fieldset>
-        </fieldset>
-        <input type="submit" value="Start">
-    </form>
-</div>
-<div class="js-game">
-    <div class="question">
-        <span class="js-question"></span> = <span class="js-answer-text question__answer"></span>
+            <input type="submit" value="Start">
+        </form>
     </div>
-    <button class="js-show-answer">Show answer</button>
-    <div class="js-answer">
-        <button class="js-next-question">Next</button>
+    <div class="js-game">
+        <div class="question">
+            <span class="js-question"></span> = <span class="js-answer-text question__answer"></span>
+        </div>
+        <button class="js-show-answer">Show answer</button>
+        <div class="js-answer">
+            <button class="js-next-question">Next</button>
+        </div>
     </div>
-</div>
-<script src="script.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
