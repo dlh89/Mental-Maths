@@ -9,8 +9,27 @@
 .question {
     font-size: 34px;
     font-weight: bold;
+    margin-bottom: 18px;
 }
 
 .question__answer {
     color: green;
+}
+
+.type-subset legend {
+    font-size: 18px;
+}
+
+fieldset {
+    margin-bottom: 20px;
+}
+
+input[type=checkbox] {
+    transform: scale(1.5);
+    margin-left: 5px;
+    margin-right: 6px;
+}
+
+label {
+    font-size: 18px;
 }
