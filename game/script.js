@@ -19,6 +19,7 @@ function startGame(e) {
     globals.game['subtractionDigits'] = subtractionDigits;
 
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
+    document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion() });
 
     newQuestion();
 }
@@ -96,7 +97,6 @@ function renderAnswer(question) {
     document.querySelector('.js-answer').style.display = 'block';
     document.querySelector('.js-answer-text').style.display = 'inline-block';
     document.querySelector('.js-answer-text').textContent = answer;
-    document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion() });
 }
 
 function getAnswer(question) {
@@ -124,8 +124,7 @@ function getRandomElement(arr) {
 }
 
 function startTimer() {
-    if (!globals.intervalId) {
-        globals.isTimerRunning = true;
+    if (!globals.intervalId) {        
         globals.timer = 0;
         document.querySelector('.js-timer').textContent = globals.timer;
     }
@@ -137,7 +136,7 @@ function startTimer() {
 }
 
 function stopTimer() {
-    clearInterval(globals.intervalId);
+    window.clearInterval(globals.intervalId);
     globals.intervalId = false;
 }
 
