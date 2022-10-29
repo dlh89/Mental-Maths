@@ -1,6 +1,8 @@
 var globals = {
     game: {
         questionTypes: [],
+        timer: false,
+        intervalId: false,
     },
 }
 
@@ -26,6 +28,7 @@ function newQuestion(numDigits) {
     var numDigits = getRandomElement(globals.game[type + 'Digits']);
     question = generateQuestion(type, numDigits);
     renderQuestion(question);
+    startTimer();
 }
 
 function generateQuestion(type, numDigits) {
@@ -87,6 +90,7 @@ function renderQuestion(question) {
 }
 
 function renderAnswer(question) {
+    stopTimer();
     var answer = getAnswer(question);
     document.querySelector('.js-show-answer').style.display = 'none';
     document.querySelector('.js-answer').style.display = 'block';
@@ -117,6 +121,24 @@ function getAnswer(question) {
 
 function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function startTimer() {
+    if (!globals.intervalId) {
+        globals.isTimerRunning = true;
+        globals.timer = 0;
+        document.querySelector('.js-timer').textContent = globals.timer;
+    }
+
+    globals.intervalId = window.setInterval(function() {
+        globals.timer++;
+        document.querySelector('.js-timer').textContent = globals.timer;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(globals.intervalId);
+    globals.intervalId = false;
 }
 
 startGame();
