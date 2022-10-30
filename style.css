@@ -1,7 +1,3 @@
-.js-answer {
-    display: none;
-}
-
 .question {
     font-size: 34px;
     font-weight: bold;
@@ -9,7 +5,7 @@
 }
 
 .question__answer {
-    color: green;
+    color: #198754;
 }
 
 .type-subset legend {
@@ -35,4 +31,38 @@ label {
     align-items: center;
     opacity: .75;
     font-size: 20px;
+}
+
+.your-answer {
+    display: none;
+}
+
+.scoreboard {
+    display: flex;
+    margin-bottom: 18px;
+}
+
+.scoreboard__score {
+    background-color: #198754;
+    color: #fff;
+}
+
+.scoreboard__score:not(:last-child) {
+    margin-right: 4px;
+}
+
+.scoreboard__score--incorrect {
+    background-color: #dc3545;
+}
+
+.answer-icon {
+    pointer-events: none;
+}
+
+.answer-icon svg {
+    fill: #fff;
+}
+
+.badge-icon {
+    margin-right: 6px;
 }

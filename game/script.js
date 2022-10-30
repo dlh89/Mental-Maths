@@ -3,6 +3,10 @@ var globals = {
         questionTypes: [],
         timer: false,
         intervalId: false,
+        score: {
+            correct: 0,
+            incorrect: 0,
+        }
     },
 }
 
@@ -19,7 +23,10 @@ function startGame(e) {
     globals.game['subtractionDigits'] = subtractionDigits;
 
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
-    document.querySelector('.js-next-question').addEventListener('click', function() { newQuestion() });
+    const yourAnswer = document.querySelectorAll('.js-your-answer');
+    yourAnswer.forEach(function(answerBtn) {
+        answerBtn.addEventListener('click', function(e) { handleRightWrong(e) });
+    });
 
     newQuestion();
 }
@@ -86,7 +93,6 @@ function renderQuestion(question) {
 
     document.querySelector('.js-question').textContent = questionText;
     document.querySelector('.js-show-answer').style.display = 'block';
-    document.querySelector('.js-answer').style.display = 'none';
     document.querySelector('.js-answer-text').style.display = 'none';
 }
 
@@ -94,9 +100,10 @@ function renderAnswer(question) {
     stopTimer();
     var answer = getAnswer(question);
     document.querySelector('.js-show-answer').style.display = 'none';
-    document.querySelector('.js-answer').style.display = 'block';
     document.querySelector('.js-answer-text').style.display = 'inline-block';
     document.querySelector('.js-answer-text').textContent = answer;
+
+    document.querySelector('.js-right-wrong').style.display = 'block';
 }
 
 function getAnswer(question) {
@@ -138,6 +145,20 @@ function startTimer() {
 function stopTimer() {
     window.clearInterval(globals.intervalId);
     globals.intervalId = false;
+}
+
+function handleRightWrong(e) {
+    const answer = e.target.getAttribute('data-your-answer');
+    if (answer === 'right') {
+        globals.game.score.correct++;
+        document.querySelector('.js-correct-score').textContent = globals.game.score.correct;
+    } else {
+        globals.game.score.incorrect++;
+        document.querySelector('.js-incorrect-score').textContent = globals.game.score.incorrect;
+    }
+
+    document.querySelector('.js-right-wrong').style.display = 'none';
+    newQuestion();
 }
 
 startGame();

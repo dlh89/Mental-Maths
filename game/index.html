@@ -6,13 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mental Maths</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <link href="../style.css?v=1" rel="stylesheet" />
+    <link href="../style.css?v=1.1" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
         <div class="row">
             <h1 class="display-2">Mental Maths</h1>
             <div class="js-game">
+                <div class="scoreboard">
+                    <div class="scoreboard__score badge"><object class="badge-icon" data="../images/tick.svg" width="10" height="10"></object><span class="js-correct-score">0</span></div>
+                    <div class="scoreboard__score badge scoreboard__score--incorrect"><object class="badge-icon" data="../images/cross.svg" width="10" height="10"></object><span class="js-incorrect-score">0</span></div>
+                </div>
                 <div class="timer">
                     <object data="../images/stopwatch.svg" width="30" height="30"></object>
                     <div class="js-timer"></div>
@@ -20,9 +24,11 @@
                 <div class="question">
                     <span class="js-question"></span> = <span class="js-answer-text question__answer"></span>
                 </div>
-                <button class="btn btn-primary btn-lg js-show-answer">Show answer</button>
-                <div class="js-answer">
-                    <button class="btn btn-outline-secondary btn-lg js-next-question">Next</button>
+                <button class="btn btn-primary btn-lg js-show-answer">Answer</button>
+                <div class="your-answer js-right-wrong">
+                    <p>Did you get the correct answer?</p>
+                    <button class="btn btn-lg btn-success js-your-answer" data-your-answer="right"><object class="answer-icon" data="../images/tick.svg" width="16" height="16"></object> Yes</button>
+                    <button class="btn btn-lg btn-danger js-your-answer" data-your-answer="wrong"><object class="answer-icon" data="../images/cross.svg" width="16" height="16"></object> No</button>
                 </div>
             </div>
         </div>
