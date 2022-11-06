@@ -91,6 +91,7 @@ function renderQuestion(question) {
     var symbol = getSymbol(question.type);
     var questionText = `${question.first} ${symbol} ${question.second}`;
 
+    document.querySelector('.js-answer-help').textContent = '';
     document.querySelector('.js-question').textContent = questionText;
     document.querySelector('.js-show-answer').style.display = 'block';
     document.querySelector('.js-answer-text').style.display = 'none';
@@ -104,6 +105,8 @@ function renderAnswer(question) {
     document.querySelector('.js-answer-text').textContent = answer;
 
     document.querySelector('.js-right-wrong').style.display = 'block';
+
+    updateAnswerHelp(question);
 }
 
 function getAnswer(question) {
@@ -159,6 +162,145 @@ function handleRightWrong(e) {
 
     document.querySelector('.js-right-wrong').style.display = 'none';
     newQuestion();
+}
+
+function updateAnswerHelp(question) {
+    if (question.type !== 'multiplication' && parseInt(question.numDigits) !== 2)
+    {
+        return;
+    }
+
+    let answerHelp = '';
+
+    // Determine the easiest method
+    if (question.first === question.second) {
+        answerHelp = getSquareHelpText(question);
+    } else if (question.first === 11 || question.second === 11) {
+        answerHelp = getMultiplicationByElevenHelpText(question);
+    } else if (question.first.toString()[1] > 7 && question.second.toString()[1] > 7) {
+        answerHelp = getMultiplicationSubtractionMethodHelpText(question);
+    } else {
+        if (shouldUseSubtractionMethod(question)) {
+            answerHelp = getMultiplicationSubtractionMethodHelpText(question);
+        } else {
+            answerHelp = getMultiplicationAdditionMethodHelpText(question);
+        }
+    }
+
+    document.querySelector('.js-answer-help').innerText = answerHelp;
+}
+
+function shouldUseSubtractionMethod(question) {
+    let shouldUseSubtractionMethod = false;
+
+    const isFirstNumberEightOrNine = parseInt(question.first.toString()[1]) === 8 || parseInt(question.first.toString()[1]) === 9;
+    const isSecondNumberEightOrNine = parseInt(question.first.toString()[1]) === 8 || parseInt(question.first.toString()[1]) === 9;
+
+    if (!isFirstNumberEightOrNine && !isSecondNumberEightOrNine) {
+        return shouldUseSubtractionMethod;
+    }
+
+    const firstDistanceToTen = getDistanceToNearestTen(question.first.toString()[1]);
+    const secondDistanceToTen = getDistanceToNearestTen(question.second.toString()[1]);
+    const areBothNumbersLessThanSix = question.first.toString()[1] < 6 && question.second.toString()[1] < 6;
+
+    if ((firstDistanceToTen > 2 && secondDistanceToTen > 2) || areBothNumbersLessThanSix) {
+        return shouldUseSubtractionMethod;
+    }
+
+    const areBothNumbersGreaterThanFive = question.first.toString()[1] > 5 && question.second.toString()[1] > 5;
+
+    if (areBothNumbersGreaterThanFive) {
+        shouldUseSubtractionMethod = true;
+    } else {
+        const smallestDistanceToTenKey = secondDistanceToTen > firstDistanceToTen ? 'first' : 'second';
+        const furthestDistanceKey = smallestDistanceToTenKey === 'first' ? 'second' : 'first';
+        let distanceThreshold;
+
+        if (parseInt(question[smallestDistanceToTenKey].toString()[1]) === 9) {
+            distanceThreshold = 2;
+        } else {
+            // smallest must be an 8 (i.e. 2 from 10) if we get here
+            distanceThreshold = 3;
+        }
+
+        if (question[furthestDistanceKey].toString()[1] > distanceThreshold) {
+            shouldUseSubtractionMethod = true;
+        }
+    }
+
+    return shouldUseSubtractionMethod;
+}
+
+function getDistanceToNearestTen(n) {
+    let distanceToTen;
+
+    if (n > 5) {
+        distanceToTen = 10 % n;
+    } else {
+        distanceToTen = n % 10;
+    }
+
+    return distanceToTen;
+}
+
+function getSquareHelpText(question) {
+    const shouldRoundUp = question.first.toString()[1] > 5;
+    const distanceToTen = question.first.toString()[1] % 10;
+    const leftMultiplier = shouldRoundUp ? (question.first.toString()[0] + 1) * 10: question.first.toString()[0] * 10;
+    const rightMultiplier = question.first.toString()[0] + (distanceToTen * 2);
+    const squareOfDistanceToTen = distanceToTen * distanceToTen;
+    const answerHelp = `Answer method: square
+    Should you round up? ${shouldRoundUp}
+    Distance to nearest 10: ${distanceToTen}
+    ${leftMultiplier} * ${rightMultiplier} = ${leftMultiplier * rightMultiplier}
+    Square of distance to 10 = ${squareOfDistanceToTen}
+    ${leftMultiplier * rightMultiplier} + ${squareOfDistanceToTen} = ${(leftMultiplier * rightMultiplier) + squareOfDistanceToTen}`;
+
+    return answerHelp;
+}
+
+function getMultiplicationByElevenHelpText(question) {
+    // TODO
+    const answerHelp = `Method: multiply by 11 shortcut`;
+
+    return answerHelp;
+}
+
+function getMultiplicationSubtractionMethodHelpText(question) {
+    // TODO
+    const answerHelp = `Method: subtraction`;
+
+    return answerHelp;
+}
+
+function getMultiplicationAdditionMethodHelpText(question) {
+    // TODO if both same, use bigger number
+    const closestSecondDigitToTen = (10 - question.first.toString()[1]) > (10 - question.second.toString()[1]) ? 'first' : 'second';
+    let leftMultiplier, rightMultiplier;
+    if (closestSecondDigitToTen === 'first') {
+        leftMultiplier = question.first;
+        rightMultiplier = question.second;
+    } else {
+        leftMultiplier = question.second;
+        rightMultiplier = question.first;
+    }
+
+    const stepOne = (leftMultiplier.toString()[0] * 10) * (rightMultiplier.toString()[0] * 10);
+    const stepTwo = (leftMultiplier.toString()[0] * 10) * rightMultiplier.toString()[1];
+    const stepThree = stepOne + stepTwo;
+    const stepFour = leftMultiplier.toString()[1] * rightMultiplier;
+    const stepFive = stepThree + stepFour
+
+    const answerHelp = `Answer method: addition
+    ${leftMultiplier.toString()[0] * 10} * ${rightMultiplier.toString()[0] * 10} = ${stepOne}
+    ${leftMultiplier.toString()[0] * 10} * ${rightMultiplier.toString()[1]} = ${stepTwo}
+    ${stepOne} + ${stepTwo} + ${stepThree}
+    ${leftMultiplier.toString()[1]} * ${rightMultiplier} = ${stepFour}
+    ${stepThree} + ${stepFour} = ${stepFive}
+    `;
+
+    return answerHelp;
 }
 
 startGame();
