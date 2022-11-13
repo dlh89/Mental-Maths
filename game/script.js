@@ -261,8 +261,23 @@ function getSquareHelpText(question) {
 }
 
 function getMultiplicationByElevenHelpText(question) {
-    // TODO
-    const answerHelp = `Method: multiply by 11 shortcut`;
+    const firstDigit = parseInt(question.first.toString()[0]);
+    const secondDigit = parseInt(question.first.toString()[1]);
+    const addition = firstDigit + secondDigit;
+    let answer;
+    let answerAdditionString;
+    if (addition > 9) {
+        answer = ((firstDigit * 10) + addition).toString() + secondDigit;
+        answerAdditionString = `(${(firstDigit * 10)} + ${addition}) = ${(firstDigit * 10) + addition}
+        (${(firstDigit * 10) + addition})${secondDigit}`
+    } else {
+        answer = firstDigit.toString() + addition + secondDigit.toString();
+        answerAdditionString = `${firstDigit.toString()}(${firstDigit + secondDigit})${secondDigit.toString()}`;
+    }
+    const answerHelp = `Method: multiply by 11 shortcut
+    ${firstDigit} + ${secondDigit} = ${firstDigit + secondDigit}
+    ${answerAdditionString}
+    Answer: ${answer}`;
 
     return answerHelp;
 }
