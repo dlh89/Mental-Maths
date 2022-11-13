@@ -246,15 +246,15 @@ function getDistanceToNearestTen(n) {
 
 function getSquareHelpText(question) {
     const shouldRoundUp = question.first.toString()[1] > 5;
-    const distanceToTen = question.first.toString()[1] % 10;
-    const leftMultiplier = shouldRoundUp ? (question.first.toString()[0] + 1) * 10: question.first.toString()[0] * 10;
-    const rightMultiplier = question.first.toString()[0] + (distanceToTen * 2);
+    const distanceToTen = question.first.toString()[1] % 10 > 5 ? 10 - (question.first.toString()[1] % 10) : question.first.toString()[1] % 10;
+    const leftMultiplier = shouldRoundUp ? ((parseInt(question.first.toString()[0])) + 1) * 10: question.first.toString()[0] * 10;
+    const rightMultiplier = shouldRoundUp ? (question.first.toString()) - distanceToTen : leftMultiplier + (distanceToTen * 2);
     const squareOfDistanceToTen = distanceToTen * distanceToTen;
     const answerHelp = `Answer method: square
     Should you round up? ${shouldRoundUp}
     Distance to nearest 10: ${distanceToTen}
     ${leftMultiplier} * ${rightMultiplier} = ${leftMultiplier * rightMultiplier}
-    Square of distance to 10 = ${squareOfDistanceToTen}
+    Square of distance to 10: ${distanceToTen} * ${distanceToTen} = ${squareOfDistanceToTen}
     ${leftMultiplier * rightMultiplier} + ${squareOfDistanceToTen} = ${(leftMultiplier * rightMultiplier) + squareOfDistanceToTen}`;
 
     return answerHelp;
