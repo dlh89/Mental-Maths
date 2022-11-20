@@ -178,7 +178,7 @@ function updateAnswerHelp(question) {
     } else if (question.first === 11 || question.second === 11) {
         answerHelp = getMultiplicationByElevenHelpText(question);
     } else if (canUseEvensAddToTen(question)) {
-        answerHelp = getEvenAddsToTenMethodHelpText(question);
+        answerHelp = getMatchingFirstDigitsAndSecondDigitsAddToTen(question);
     } else if (getDigit(question.first, 1) > 7 && getDigit(question.second, 1) > 7) {
         answerHelp = getMultiplicationSubtractionMethodHelpText(question);
     } else {
@@ -296,10 +296,11 @@ function getMultiplicationByElevenHelpText(question) {
     return answerHelp;
 }
 
-function getEvenAddsToTenMethodHelpText(question) {
+function getMatchingFirstDigitsAndSecondDigitsAddToTen(question) {
     const firstPart = ((getDigit(question.first, 0) * 10) * (getDigit(question.first, 0) + 1) * 10);
     const secondPart = getDigit(question.first, 1) * getDigit(question.second, 1);
-    const answerHelp = `${getDigit(question.first, 0) * 10} * ${(getDigit(question.first, 0) + 1) * 10} = ${firstPart}
+    const answerHelp = `Method: Matching first digits and second digits add up to 10 trick
+    ${getDigit(question.first, 0) * 10} * ${(getDigit(question.first, 0) + 1) * 10} = ${firstPart}
     ${getDigit(question.first, 1)} * ${getDigit(question.second, 1)} = ${secondPart}
     ${firstPart} + ${secondPart} = ${firstPart + secondPart}`;
 
