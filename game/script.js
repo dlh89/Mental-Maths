@@ -177,6 +177,8 @@ function updateAnswerHelp(question) {
         answerHelp = getSquareHelpText(question);
     } else if (question.first === 11 || question.second === 11) {
         answerHelp = getMultiplicationByElevenHelpText(question);
+    } else if (canUseEvensAddToTen(question)) {
+        answerHelp = getEvenAddsToTenMethodHelpText(question);
     } else if (question.first.toString()[1] > 7 && question.second.toString()[1] > 7) {
         answerHelp = getMultiplicationSubtractionMethodHelpText(question);
     } else {
@@ -232,6 +234,18 @@ function shouldUseSubtractionMethod(question) {
     return shouldUseSubtractionMethod;
 }
 
+function canUseEvensAddToTen(question) {
+    let canUse = false;
+
+    if (question.first.toString()[0] === question.second.toString()[0] &&
+        parseInt(question.first.toString()[1]) + parseInt(question.second.toString()[1]) === 10
+    ) {
+        canUse = true;
+    }
+
+    return canUse;
+}
+
 function getDistanceToNearestTen(n) {
     let distanceToTen;
 
@@ -278,6 +292,16 @@ function getMultiplicationByElevenHelpText(question) {
     ${firstDigit} + ${secondDigit} = ${firstDigit + secondDigit}
     ${answerAdditionString}
     Answer: ${answer}`;
+
+    return answerHelp;
+}
+
+function getEvenAddsToTenMethodHelpText(question) {
+    const firstPart = ((question.first.toString()[0] * 10) * (parseInt(question.first.toString()[0]) + 1) * 10);
+    const secondPart = question.first.toString()[1] * question.second.toString()[1];
+    const answerHelp = `${question.first.toString()[0] * 10} * ${(parseInt(question.first.toString()[0]) + 1) * 10} = ${firstPart}
+    ${question.first.toString()[1]} * ${question.second.toString()[1]} = ${secondPart}
+    ${firstPart} + ${secondPart} = ${firstPart + secondPart}`;
 
     return answerHelp;
 }
