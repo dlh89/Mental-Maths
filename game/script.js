@@ -179,7 +179,7 @@ function updateAnswerHelp(question) {
         answerHelp = getMultiplicationByElevenHelpText(question);
     } else if (canUseEvensAddToTen(question)) {
         answerHelp = getEvenAddsToTenMethodHelpText(question);
-    } else if (question.first.toString()[1] > 7 && question.second.toString()[1] > 7) {
+    } else if (getDigit(question.first, 1) > 7 && getDigit(question.second, 1) > 7) {
         answerHelp = getMultiplicationSubtractionMethodHelpText(question);
     } else {
         if (shouldUseSubtractionMethod(question)) {
@@ -195,22 +195,22 @@ function updateAnswerHelp(question) {
 function shouldUseSubtractionMethod(question) {
     let shouldUseSubtractionMethod = false;
 
-    const isFirstNumberEightOrNine = parseInt(question.first.toString()[1]) === 8 || parseInt(question.first.toString()[1]) === 9;
-    const isSecondNumberEightOrNine = parseInt(question.first.toString()[1]) === 8 || parseInt(question.first.toString()[1]) === 9;
+    const isFirstNumberEightOrNine = getDigit(question.first, 1) === 8 || getDigit(question.first, 1) === 9;
+    const isSecondNumberEightOrNine = getDigit(question.second, 1) === 8 || getDigit(question.second, 1) === 9;
 
     if (!isFirstNumberEightOrNine && !isSecondNumberEightOrNine) {
         return shouldUseSubtractionMethod;
     }
 
-    const firstDistanceToTen = getDistanceToNearestTen(question.first.toString()[1]);
-    const secondDistanceToTen = getDistanceToNearestTen(question.second.toString()[1]);
-    const areBothNumbersLessThanSix = question.first.toString()[1] < 6 && question.second.toString()[1] < 6;
+    const firstDistanceToTen = getDistanceToNearestTen(getDigit(question.first, 1));
+    const secondDistanceToTen = getDistanceToNearestTen(getDigit(question.second, 1));
+    const areBothNumbersLessThanSix = getDigit(question.first, 1) < 6 && getDigit(question.second, 1) < 6;
 
     if ((firstDistanceToTen > 2 && secondDistanceToTen > 2) || areBothNumbersLessThanSix) {
         return shouldUseSubtractionMethod;
     }
 
-    const areBothNumbersGreaterThanFive = question.first.toString()[1] > 5 && question.second.toString()[1] > 5;
+    const areBothNumbersGreaterThanFive = getDigit(question.first, 1) > 5 && getDigit(question.second, 1) > 5;
 
     if (areBothNumbersGreaterThanFive) {
         shouldUseSubtractionMethod = true;
@@ -219,14 +219,14 @@ function shouldUseSubtractionMethod(question) {
         const furthestDistanceKey = smallestDistanceToTenKey === 'first' ? 'second' : 'first';
         let distanceThreshold;
 
-        if (parseInt(question[smallestDistanceToTenKey].toString()[1]) === 9) {
+        if (getDigit(question[smallestDistanceToTenKey], 1) === 9) {
             distanceThreshold = 2;
         } else {
             // smallest must be an 8 (i.e. 2 from 10) if we get here
             distanceThreshold = 3;
         }
 
-        if (question[furthestDistanceKey].toString()[1] > distanceThreshold) {
+        if (getDigit(question[furthestDistanceKey], 1) > distanceThreshold) {
             shouldUseSubtractionMethod = true;
         }
     }
@@ -237,8 +237,8 @@ function shouldUseSubtractionMethod(question) {
 function canUseEvensAddToTen(question) {
     let canUse = false;
 
-    if (question.first.toString()[0] === question.second.toString()[0] &&
-        parseInt(question.first.toString()[1]) + parseInt(question.second.toString()[1]) === 10
+    if (getDigit(question.first, 0) === getDigit(question.second, 0) &&
+        getDigit(question.first, 1) + getDigit(question.second, 1) === 10
     ) {
         canUse = true;
     }
@@ -259,9 +259,9 @@ function getDistanceToNearestTen(n) {
 }
 
 function getSquareHelpText(question) {
-    const shouldRoundUp = question.first.toString()[1] > 5;
-    const distanceToTen = question.first.toString()[1] % 10 > 5 ? 10 - (question.first.toString()[1] % 10) : question.first.toString()[1] % 10;
-    const leftMultiplier = shouldRoundUp ? ((parseInt(question.first.toString()[0])) + 1) * 10: question.first.toString()[0] * 10;
+    const shouldRoundUp = getDigit(question.first, 1) > 5;
+    const distanceToTen = getDigit(question.first, 1) % 10 > 5 ? 10 - (getDigit(question.first, 1) % 10) : getDigit(question.first, 1) % 10;
+    const leftMultiplier = shouldRoundUp ? ((getDigit(question.first, 0)) + 1) * 10: getDigit(question.first, 0) * 10;
     const rightMultiplier = shouldRoundUp ? (question.first.toString()) - distanceToTen : leftMultiplier + (distanceToTen * 2);
     const squareOfDistanceToTen = distanceToTen * distanceToTen;
     const answerHelp = `Answer method: square
@@ -275,8 +275,8 @@ function getSquareHelpText(question) {
 }
 
 function getMultiplicationByElevenHelpText(question) {
-    const firstDigit = parseInt(question.first.toString()[0]);
-    const secondDigit = parseInt(question.first.toString()[1]);
+    const firstDigit = getDigit(question.first, 0);
+    const secondDigit = getDigit(question.first, 1);
     const addition = firstDigit + secondDigit;
     let answer;
     let answerAdditionString;
@@ -297,10 +297,10 @@ function getMultiplicationByElevenHelpText(question) {
 }
 
 function getEvenAddsToTenMethodHelpText(question) {
-    const firstPart = ((question.first.toString()[0] * 10) * (parseInt(question.first.toString()[0]) + 1) * 10);
-    const secondPart = question.first.toString()[1] * question.second.toString()[1];
-    const answerHelp = `${question.first.toString()[0] * 10} * ${(parseInt(question.first.toString()[0]) + 1) * 10} = ${firstPart}
-    ${question.first.toString()[1]} * ${question.second.toString()[1]} = ${secondPart}
+    const firstPart = ((getDigit(question.first, 0) * 10) * (getDigit(question.first, 0) + 1) * 10);
+    const secondPart = getDigit(question.first, 1) * getDigit(question.second, 1);
+    const answerHelp = `${getDigit(question.first, 0) * 10} * ${(getDigit(question.first, 0) + 1) * 10} = ${firstPart}
+    ${getDigit(question.first, 1)} * ${getDigit(question.second, 1)} = ${secondPart}
     ${firstPart} + ${secondPart} = ${firstPart + secondPart}`;
 
     return answerHelp;
@@ -315,7 +315,7 @@ function getMultiplicationSubtractionMethodHelpText(question) {
 
 function getMultiplicationAdditionMethodHelpText(question) {
     // TODO if both same, use bigger number
-    const closestSecondDigitToTen = (10 - question.first.toString()[1]) > (10 - question.second.toString()[1]) ? 'first' : 'second';
+    const closestSecondDigitToTen = (10 - getDigit(question.first, 1)) > (10 - getDigit(question.second, 1)) ? 'first' : 'second';
     let leftMultiplier, rightMultiplier;
     if (closestSecondDigitToTen === 'first') {
         leftMultiplier = question.first;
@@ -325,21 +325,25 @@ function getMultiplicationAdditionMethodHelpText(question) {
         rightMultiplier = question.first;
     }
 
-    const stepOne = (leftMultiplier.toString()[0] * 10) * (rightMultiplier.toString()[0] * 10);
-    const stepTwo = (leftMultiplier.toString()[0] * 10) * rightMultiplier.toString()[1];
+    const stepOne = (getDigit(leftMultiplier, 0) * 10) * (getDigit(rightMultiplier, 0) * 10);
+    const stepTwo = (getDigit(leftMultiplier, 0) * 10) * getDigit(rightMultiplier, 1);
     const stepThree = stepOne + stepTwo;
-    const stepFour = leftMultiplier.toString()[1] * rightMultiplier;
+    const stepFour = getDigit(leftMultiplier, 1) * rightMultiplier;
     const stepFive = stepThree + stepFour
 
     const answerHelp = `Answer method: addition
-    ${leftMultiplier.toString()[0] * 10} * ${rightMultiplier.toString()[0] * 10} = ${stepOne}
-    ${leftMultiplier.toString()[0] * 10} * ${rightMultiplier.toString()[1]} = ${stepTwo}
+    ${getDigit(leftMultiplier, 0) * 10} * ${getDigit(rightMultiplier, 0) * 10} = ${stepOne}
+    ${getDigit(leftMultiplier, 0) * 10} * ${getDigit(rightMultiplier, 1)} = ${stepTwo}
     ${stepOne} + ${stepTwo} + ${stepThree}
-    ${leftMultiplier.toString()[1]} * ${rightMultiplier} = ${stepFour}
+    ${getDigit(leftMultiplier, 1)} * ${rightMultiplier} = ${stepFour}
     ${stepThree} + ${stepFour} = ${stepFive}
     `;
 
     return answerHelp;
+}
+
+function getDigit(number, digit) {
+    return parseInt(number.toString()[digit]);
 }
 
 startGame();
