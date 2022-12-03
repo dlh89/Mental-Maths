@@ -61,7 +61,11 @@ function getNumber(numDigits) {
     var number = '';
 
     for (let i = 0; i < numDigits; i++) {
-        number += getRandomDigit();
+        var randomDigit = getRandomDigit();
+        while (i === 0 && numDigits > 1 && randomDigit === 0) {
+            randomDigit = getRandomDigit();
+        }
+        number += randomDigit;
     }
 
     return parseInt(number);
