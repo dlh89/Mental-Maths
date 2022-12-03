@@ -319,8 +319,15 @@ function getMultiplicationSubtractionMethodHelpText(question) {
 }
 
 function getMultiplicationAdditionMethodHelpText(question) {
-    // TODO if both same, use bigger number
-    const closestSecondDigitToTen = (10 - getDigit(question.first, 1)) > (10 - getDigit(question.second, 1)) ? 'first' : 'second';
+    const firstSecondDigitDistanceToTen = 10 - getDigit(question.first, 1);
+    const secondSecondDigitDistanceToTen = 10 - getDigit(question.second, 1);
+    let closestSecondDigitToTen;
+    if (firstSecondDigitDistanceToTen === secondSecondDigitDistanceToTen) {
+        // use whichever has largest first digit to make the addition easier
+        closestSecondDigitToTen = getDigit(question.second, 0) > getDigit(question.first, 0) ? 'second' : 'first';
+    } else {
+        closestSecondDigitToTen = (firstSecondDigitDistanceToTen > secondSecondDigitDistanceToTen) ? 'first' : 'second';
+    }
     let leftMultiplier, rightMultiplier;
     if (closestSecondDigitToTen === 'first') {
         leftMultiplier = question.first;
@@ -347,6 +354,13 @@ function getMultiplicationAdditionMethodHelpText(question) {
     return answerHelp;
 }
 
+/**
+ * Get zero-indexed digit of a number as an integer
+ *
+ * @param {integer|string} number The number to parse
+ * @param {integer|string} digit Zero-indexed digit to get
+ * @returns {integer}
+ */
 function getDigit(number, digit) {
     return parseInt(number.toString()[digit]);
 }
