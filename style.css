@@ -55,6 +55,14 @@ label {
     background-color: #dc3545;
 }
 
+.scoreboard__score--average-time {
+    background-color: #358fdc;
+}
+
+.scoreboard__average-time {
+    display: none;
+}
+
 .answer-icon {
     pointer-events: none;
 }

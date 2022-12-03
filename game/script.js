@@ -6,7 +6,8 @@ var globals = {
         score: {
             correct: 0,
             incorrect: 0,
-        }
+        },
+        answerTimes: [],
     },
 }
 
@@ -111,6 +112,7 @@ function renderAnswer(question) {
     document.querySelector('.js-right-wrong').style.display = 'block';
 
     updateAnswerHelp(question);
+    updateAverageTimeToAnswer();
 }
 
 function getAnswer(question) {
@@ -166,6 +168,15 @@ function handleRightWrong(e) {
 
     document.querySelector('.js-right-wrong').style.display = 'none';
     newQuestion();
+}
+
+function updateAverageTimeToAnswer() {
+    globals.game.answerTimes.push(parseInt(document.querySelector('.js-timer').textContent));
+    const totalAnswerTime = globals.game.answerTimes.reduce(function(accumulator, answerTime) {
+        return accumulator + answerTime;
+    }, 0);
+    const averageTimeToAnswer = Math.round(totalAnswerTime / globals.game.answerTimes.length);
+    document.querySelector('.js-average-time').textContent = averageTimeToAnswer;
 }
 
 function updateAnswerHelp(question) {
