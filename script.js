@@ -38,3 +38,20 @@ function handleDisableChildren(parent) {
         }
     });
 }
+
+const startForm = document.querySelector('.js-start-form');
+
+startForm.addEventListener('submit', function(e) {
+    var isQuestionTypeSelected = false;
+    const questionTypeCheckboxes = document.querySelectorAll('[name="question_types"]');
+    questionTypeCheckboxes.forEach(function(questionTypeCheckbox) {
+        if (questionTypeCheckbox.checked) {
+            isQuestionTypeSelected = true;
+        }
+    });
+
+    if (!isQuestionTypeSelected) {
+        e.preventDefault();
+        alert('Please select at least one question type.');
+    }
+});
