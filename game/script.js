@@ -17,11 +17,13 @@ function startGame(e) {
     var multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
     var additionDigits = parsedUrl.searchParams.getAll('addition_digits');
     var subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
+    var includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
 
     globals.game['questionTypes'] = questionTypes;
     globals.game['multiplicationDigits'] = multiplicationDigits;
     globals.game['additionDigits'] = additionDigits;
     globals.game['subtractionDigits'] = subtractionDigits;
+    globals.game['includeSubtractionNegatives'] = includeSubtractionNegatives;
 
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
     const yourAnswer = document.querySelectorAll('.js-your-answer');
@@ -36,6 +38,14 @@ function newQuestion(numDigits) {
     var type = getRandomElement(globals.game['questionTypes']);
     var numDigits = getRandomElement(globals.game[type + 'Digits']);
     question = generateQuestion(type, numDigits);
+    if (type === 'subtraction' && !globals.game['includeSubtractionNegatives']) {
+        if (question.second > question.first) {
+            // Re-order the question so the largest number is on the left hand side
+            var tempSecond = question.second;
+            question.second = question.first;
+            question.first = tempSecond;
+        }
+    }
     renderQuestion(question);
     startTimer();
 }
