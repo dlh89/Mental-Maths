@@ -234,6 +234,12 @@ function shouldUseSubtractionMethod(question) {
         return shouldUseSubtractionMethod;
     }
 
+    const isEitherNumberLessThanSix = getDigit(question.first, 1) <= 5 || getDigit(question.second, 1) <= 5;
+
+    if (firstDistanceToTen === secondDistanceToTen && isEitherNumberLessThanSix) {
+        return shouldUseSubtractionMethod;
+    }
+
     const areBothNumbersGreaterThanFive = getDigit(question.first, 1) > 5 && getDigit(question.second, 1) > 5;
 
     if (areBothNumbersGreaterThanFive) {
@@ -241,6 +247,11 @@ function shouldUseSubtractionMethod(question) {
     } else {
         const smallestDistanceToTenKey = secondDistanceToTen > firstDistanceToTen ? 'first' : 'second';
         const furthestDistanceKey = smallestDistanceToTenKey === 'first' ? 'second' : 'first';
+
+        if (getDigit(question[smallestDistanceToTenKey], 1) <= 5) {
+            return shouldUseSubtractionMethod;
+        }
+
         let distanceThreshold;
 
         if (getDigit(question[smallestDistanceToTenKey], 1) === 9) {
