@@ -190,8 +190,7 @@ function updateAverageTimeToAnswer() {
 }
 
 function updateAnswerHelp(question) {
-    if (question.type !== 'multiplication' && parseInt(question.numDigits) !== 2)
-    {
+    if (!(question.type === 'multiplication' && parseInt(question.numDigits) === 2)) {
         return;
     }
 
