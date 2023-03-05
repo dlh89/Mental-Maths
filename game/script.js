@@ -368,19 +368,23 @@ function getMultiplicationAdditionMethodHelpText(question) {
         rightMultiplier = question.first;
     }
 
-    const stepOne = (getDigit(leftMultiplier, 0) * 10) * (getDigit(rightMultiplier, 0) * 10);
-    const stepTwo = (getDigit(leftMultiplier, 0) * 10) * getDigit(rightMultiplier, 1);
+    const leftFirstDigitMultiplier = getDigit(leftMultiplier, 0) * 10;
+    const leftSecondDigit = getDigit(leftMultiplier, 1);
+    const rightFirstDigitMultiplier = getDigit(rightMultiplier, 0) * 10;
+    const rightSecondDigit = getDigit(rightMultiplier, 1);
+
+    const stepOne = leftFirstDigitMultiplier * rightFirstDigitMultiplier;
+    const stepTwo = leftFirstDigitMultiplier * rightSecondDigit;
     const stepThree = stepOne + stepTwo;
-    const stepFour = getDigit(leftMultiplier, 1) * rightMultiplier;
+    const stepFour = leftSecondDigit * rightMultiplier;
     const stepFive = stepThree + stepFour
 
-    const answerHelp = `Answer method: addition
-    ${getDigit(leftMultiplier, 0) * 10} * ${getDigit(rightMultiplier, 0) * 10} = ${stepOne}
-    ${getDigit(leftMultiplier, 0) * 10} * ${getDigit(rightMultiplier, 1)} = ${stepTwo}
-    ${stepOne} + ${stepTwo} + ${stepThree}
-    ${getDigit(leftMultiplier, 1)} * ${rightMultiplier} = ${stepFour}
-    ${stepThree} + ${stepFour} = ${stepFive}
-    `;
+    let answerHelp = 'Answer method: addition';
+    answerHelp += leftFirstDigitMultiplier > 1 && rightFirstDigitMultiplier > 1 ? `\n${leftFirstDigitMultiplier} * ${rightFirstDigitMultiplier} = ${stepOne}` : '';
+    answerHelp += leftFirstDigitMultiplier > 1 && rightSecondDigit > 1 ? `\n${leftFirstDigitMultiplier} * ${rightSecondDigit} = ${stepTwo}` : '';
+    answerHelp += stepOne && stepTwo ? `\n${stepOne} + ${stepTwo} + ${stepThree}` : '';
+    answerHelp += leftSecondDigit > 1 && rightMultiplier > 1 ? `\n${leftSecondDigit} * ${rightMultiplier} = ${stepFour}` : '';
+    answerHelp += stepThree && stepFour ? `\n${stepThree} + ${stepFour} = ${stepFive}` : '';
 
     return answerHelp;
 }
