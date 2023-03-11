@@ -8,8 +8,8 @@ formFields.forEach(function(field) {
     }
 
     const savedValue = localStorage.getItem(field.id)
-    if (savedValue === 'false') {
-        field.checked = false;
+    if (savedValue) {
+        field.checked = savedValue === 'false' ? false : true;
     }
 });
 
