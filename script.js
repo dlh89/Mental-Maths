@@ -46,7 +46,13 @@ startForm.addEventListener('submit', function(e) {
     const questionTypeCheckboxes = document.querySelectorAll('[name="question_types"]');
     questionTypeCheckboxes.forEach(function(questionTypeCheckbox) {
         if (questionTypeCheckbox.checked) {
-            isQuestionTypeSelected = true;
+            const childCheckboxes = Array.from(questionTypeCheckbox.parentNode.querySelectorAll('[type="checkbox"]'))
+                                    .filter(item => item !== questionTypeCheckbox);
+            childCheckboxes.forEach(function(childCheckbox) {
+                if (childCheckbox.checked) {
+                    isQuestionTypeSelected = true;
+                }
+            });
         }
     });
 
