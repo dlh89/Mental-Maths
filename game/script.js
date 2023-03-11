@@ -37,7 +37,8 @@ function startGame(e) {
 function newQuestion(numDigits) {
     var type = getRandomElement(globals.game['questionTypes']);
     var numDigits = getRandomElement(globals.game[type + 'Digits']);
-    question = generateQuestion(type, numDigits);
+    var digitsArr = getDigitsArr(numDigits);
+    question = generateQuestion(type, ...digitsArr);
     if (type === 'subtraction' && !globals.game['includeSubtractionNegatives']) {
         if (question.second > question.first) {
             // Re-order the question so the largest number is on the left hand side
@@ -50,30 +51,62 @@ function newQuestion(numDigits) {
     startTimer();
 }
 
-function generateQuestion(type, numDigits) {
-    var first = getNumber(numDigits);
-    var second = getNumber(numDigits);
+/**
+ * Translate string into array of two integers
+ * @param {string} numDigits 
+ */
+function getDigitsArr(numDigits) {
+    return numDigits.split('x');
+}
+
+function generateQuestion(type, firstNumDigits, secondNumDigits) {
+    const firstNumExcludeNums = getExcludeNums(type, firstNumDigits);
+    const secondNumExcludeNums = getExcludeNums(type, secondNumDigits);
+    var first = getNumber(firstNumDigits, firstNumExcludeNums);
+    var second = getNumber(secondNumDigits, secondNumExcludeNums);
 
     var question = {
         'first': first,
         'second': second,
         'type': type,
-        'numDigits': numDigits,
+        'firstNumDigits': firstNumDigits,
+        'secondNumDigits': secondNumDigits,
     }
 
     return question;
+}
+
+/**
+ * Return an array of numbers that can't be included for the number of digits
+ * @param {string} type 
+ * @param {string|integer} numDigits 
+ * @returns {array}
+ */
+function getExcludeNums(type, numDigits) {
+    const excludeNums = [];
+    if (parseInt(numDigits) === 1) {
+        // Avoid questions such as 0 + 0
+        excludeNums.push(0);
+
+        if (type === 'multiplication') {
+            // Avoid questions such as 1 x 1
+            excludeNums.push(1);
+        }
+    }
+
+    return excludeNums;
 }
 
 function getRandomDigit() {
     return Math.round(Math.random() * 9);
 }
 
-function getNumber(numDigits) {
+function getNumber(numDigits, excludeNums = []) {
     var number = '';
 
     for (let i = 0; i < numDigits; i++) {
         var randomDigit = getRandomDigit();
-        while (i === 0 && numDigits > 1 && randomDigit === 0) {
+        while (i === 0 && numDigits > 1 && randomDigit === 0 || excludeNums.includes(randomDigit)) {
             randomDigit = getRandomDigit();
         }
         number += randomDigit;
@@ -190,7 +223,10 @@ function updateAverageTimeToAnswer() {
 }
 
 function updateAnswerHelp(question) {
-    if (!(question.type === 'multiplication' && parseInt(question.numDigits) === 2)) {
+    if (
+        !(question.type === 'multiplication' &&
+        parseInt(question.firstNumDigits) === 2 && parseInt(question.secondNumDigits) === 2)
+    ) {
         return;
     }
 
