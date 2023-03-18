@@ -63,7 +63,7 @@ function generateQuestion(type, firstNumDigits, secondNumDigits) {
     const firstNumExcludeNums = getExcludeNums(type, firstNumDigits);
     const secondNumExcludeNums = getExcludeNums(type, secondNumDigits);
     const first = getNumber(firstNumDigits, firstNumExcludeNums);
-    const second = getNumber(secondNumDigits, secondNumExcludeNums);
+    const second = getNumber(secondNumDigits, secondNumExcludeNums);    
 
     const question = {
         'first': first,
@@ -245,7 +245,7 @@ function updateAnswerHelp(question) {
         if (shouldUseSubtractionMethod(question)) {
             answerHelp = getMultiplicationSubtractionMethodHelpText(question);
         } else {
-            answerHelp = getMultiplicationAdditionMethodHelpText(question);
+            answerHelp = getMultiplicationAdditionMethodHelpTextWithLabel(question);
         }
     }
 
@@ -379,22 +379,64 @@ function getMatchingFirstDigitsAndSecondDigitsAddToTen(question) {
 }
 
 function getMultiplicationSubtractionMethodHelpText(question) {
-    // TODO
-    const answerHelp = `Method: subtraction`;
+    let answerHelp = `Method: subtraction`;
+
+    const subtractionQuestion = getSubtractionMethodQuestion(question);
+    answerHelp += getMultiplicationAdditionMethodHelpText(subtractionQuestion);
+
+    // Add the subtraction part
+    const keyOfNumberToRoundUp = getClosestSecondDigitToTen(question);
+    const multiplicationToSubtract = 10 - (getDigit(question[keyOfNumberToRoundUp], 1) % 10);
+    const keyOfNumberToSubtract = keyOfNumberToRoundUp === 'first' ? 'second' : 'first';
+    const amountToSubtract = multiplicationToSubtract * question[keyOfNumberToSubtract];
+    const amountToSubtractQuestionText = multiplicationToSubtract > 1 ? `${multiplicationToSubtract} * ${subtractionQuestion.second} = ` : '';
+    const subtractionQuestionAnswer = getAnswer(subtractionQuestion);
+    const finalAnswer = subtractionQuestionAnswer - amountToSubtract;
+    answerHelp += `\nAmount to subtract: ${amountToSubtractQuestionText} ${amountToSubtract}
+    Answer: ${subtractionQuestionAnswer} - ${amountToSubtract} = ${finalAnswer}`;
+
+    return answerHelp;
+}
+
+function getSubtractionMethodQuestion(question) {
+    const keyOfNumberToRoundUp = getClosestSecondDigitToTen(question);
+    const firstRoundedUp = question[keyOfNumberToRoundUp] + (10 - question[keyOfNumberToRoundUp] % 10);
+
+    const subtractionQuestion = {
+        type: 'multiplication',
+        first: firstRoundedUp,
+        second: keyOfNumberToRoundUp === 'first' ? question.second : question.first,
+    };
+
+    return subtractionQuestion;
+}
+
+function getClosestSecondDigitToTen(question) {
+    let closestSecondDigitToTen;
+
+    const firstSecondDigitDistanceToTen = getDistanceToNearestTen(getDigit(question.first, 1));
+    const secondSecondDigitDistanceToTen = getDistanceToNearestTen(getDigit(question.second, 1));
+
+    if (firstSecondDigitDistanceToTen === secondSecondDigitDistanceToTen) {
+        // use whichever has largest first digit to make the addition easier
+        closestSecondDigitToTen = getDigit(question.second, 0) > getDigit(question.first, 0) ? 'second' : 'first';
+    } else {
+        closestSecondDigitToTen = (firstSecondDigitDistanceToTen < secondSecondDigitDistanceToTen) ? 'first' : 'second';
+    }
+
+    return closestSecondDigitToTen;
+}
+
+function getMultiplicationAdditionMethodHelpTextWithLabel(question) {
+    let answerHelp = 'Answer method: addition';
+    answerHelp += getMultiplicationAdditionMethodHelpText(question);
 
     return answerHelp;
 }
 
 function getMultiplicationAdditionMethodHelpText(question) {
-    const firstSecondDigitDistanceToTen = 10 - getDigit(question.first, 1);
-    const secondSecondDigitDistanceToTen = 10 - getDigit(question.second, 1);
-    let closestSecondDigitToTen;
-    if (firstSecondDigitDistanceToTen === secondSecondDigitDistanceToTen) {
-        // use whichever has largest first digit to make the addition easier
-        closestSecondDigitToTen = getDigit(question.second, 0) > getDigit(question.first, 0) ? 'second' : 'first';
-    } else {
-        closestSecondDigitToTen = (firstSecondDigitDistanceToTen > secondSecondDigitDistanceToTen) ? 'first' : 'second';
-    }
+    closestSecondDigitToTen = getClosestSecondDigitToTen(question);
+    
     let leftMultiplier, rightMultiplier;
     if (closestSecondDigitToTen === 'first') {
         leftMultiplier = question.first;
@@ -404,7 +446,7 @@ function getMultiplicationAdditionMethodHelpText(question) {
         rightMultiplier = question.first;
     }
 
-    const leftFirstDigitMultiplier = getDigit(leftMultiplier, 0) * 10;
+    const leftFirstDigitMultiplier = leftMultiplier === 100 ? 100 : getDigit(leftMultiplier, 0) * 10;
     const leftSecondDigit = getDigit(leftMultiplier, 1);
     const rightFirstDigitMultiplier = getDigit(rightMultiplier, 0) * 10;
     const rightSecondDigit = getDigit(rightMultiplier, 1);
@@ -415,8 +457,8 @@ function getMultiplicationAdditionMethodHelpText(question) {
     const stepFour = leftSecondDigit * rightMultiplier;
     const stepFive = stepThree + stepFour
 
-    let answerHelp = 'Answer method: addition';
-    answerHelp += leftFirstDigitMultiplier > 1 && rightFirstDigitMultiplier > 1 ? `\n${leftFirstDigitMultiplier} * ${rightFirstDigitMultiplier} = ${stepOne}` : '';
+    
+    let answerHelp = leftFirstDigitMultiplier > 1 && rightFirstDigitMultiplier > 1 ? `\n${leftFirstDigitMultiplier} * ${rightFirstDigitMultiplier} = ${stepOne}` : '';
     answerHelp += leftFirstDigitMultiplier > 1 && rightSecondDigit > 1 ? `\n${leftFirstDigitMultiplier} * ${rightSecondDigit} = ${stepTwo}` : '';
     answerHelp += stepOne && stepTwo ? `\n${stepOne} + ${stepTwo} + ${stepThree}` : '';
     answerHelp += leftSecondDigit > 1 && rightMultiplier > 1 ? `\n${leftSecondDigit} * ${rightMultiplier} = ${stepFour}` : '';
