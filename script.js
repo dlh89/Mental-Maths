@@ -42,7 +42,7 @@ function handleDisableChildren(parent) {
 const startForm = document.querySelector('.js-start-form');
 
 startForm.addEventListener('submit', function(e) {
-    var isQuestionTypeSelected = false;
+    let isQuestionTypeSelected = false;
     const questionTypeCheckboxes = document.querySelectorAll('[name="question_types"]');
     questionTypeCheckboxes.forEach(function(questionTypeCheckbox) {
         if (questionTypeCheckbox.checked) {

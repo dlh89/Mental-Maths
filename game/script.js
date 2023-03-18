@@ -1,4 +1,4 @@
-var globals = {
+const globals = {
     game: {
         questionTypes: [],
         timer: false,
@@ -13,11 +13,11 @@ var globals = {
 
 function startGame(e) {
     const parsedUrl = new URL(window.location.href);
-    var questionTypes = parsedUrl.searchParams.getAll('question_types');
-    var multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
-    var additionDigits = parsedUrl.searchParams.getAll('addition_digits');
-    var subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
-    var includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
+    const questionTypes = parsedUrl.searchParams.getAll('question_types');
+    const multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
+    const additionDigits = parsedUrl.searchParams.getAll('addition_digits');
+    const subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
+    const includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
 
     globals.game['questionTypes'] = questionTypes;
     globals.game['multiplicationDigits'] = multiplicationDigits;
@@ -34,15 +34,15 @@ function startGame(e) {
     newQuestion();
 }
 
-function newQuestion(numDigits) {
-    var type = getRandomElement(globals.game['questionTypes']);
-    var numDigits = getRandomElement(globals.game[type + 'Digits']);
-    var digitsArr = getDigitsArr(numDigits);
+function newQuestion() {
+    const type = getRandomElement(globals.game['questionTypes']);
+    const numDigits = getRandomElement(globals.game[type + 'Digits']);
+    const digitsArr = getDigitsArr(numDigits);
     question = generateQuestion(type, ...digitsArr);
     if (type === 'subtraction' && !globals.game['includeSubtractionNegatives']) {
         if (question.second > question.first) {
             // Re-order the question so the largest number is on the left hand side
-            var tempSecond = question.second;
+            const tempSecond = question.second;
             question.second = question.first;
             question.first = tempSecond;
         }
@@ -62,10 +62,10 @@ function getDigitsArr(numDigits) {
 function generateQuestion(type, firstNumDigits, secondNumDigits) {
     const firstNumExcludeNums = getExcludeNums(type, firstNumDigits);
     const secondNumExcludeNums = getExcludeNums(type, secondNumDigits);
-    var first = getNumber(firstNumDigits, firstNumExcludeNums);
-    var second = getNumber(secondNumDigits, secondNumExcludeNums);
+    const first = getNumber(firstNumDigits, firstNumExcludeNums);
+    const second = getNumber(secondNumDigits, secondNumExcludeNums);
 
-    var question = {
+    const question = {
         'first': first,
         'second': second,
         'type': type,
@@ -102,10 +102,10 @@ function getRandomDigit() {
 }
 
 function getNumber(numDigits, excludeNums = []) {
-    var number = '';
+    let number = '';
 
     for (let i = 0; i < numDigits; i++) {
-        var randomDigit = getRandomDigit();
+        let randomDigit = getRandomDigit();
         while (i === 0 && numDigits > 1 && randomDigit === 0 || excludeNums.includes(randomDigit)) {
             randomDigit = getRandomDigit();
         }
@@ -116,7 +116,7 @@ function getNumber(numDigits, excludeNums = []) {
 }
 
 function getSymbol(type) {
-    var symbol;
+    let symbol;
 
     switch (type) {
         case 'multiplication':
@@ -136,8 +136,8 @@ function getSymbol(type) {
 }
 
 function renderQuestion(question) {
-    var symbol = getSymbol(question.type);
-    var questionText = `${question.first} ${symbol} ${question.second}`;
+    const symbol = getSymbol(question.type);
+    const questionText = `${question.first} ${symbol} ${question.second}`;
 
     document.querySelector('.js-answer-help').textContent = '';
     document.querySelector('.js-question').textContent = questionText;
@@ -147,7 +147,7 @@ function renderQuestion(question) {
 
 function renderAnswer(question) {
     stopTimer();
-    var answer = getAnswer(question);
+    const answer = getAnswer(question);
     document.querySelector('.js-show-answer').style.display = 'none';
     document.querySelector('.js-answer-text').style.display = 'inline-block';
     document.querySelector('.js-answer-text').textContent = answer;
@@ -159,7 +159,7 @@ function renderAnswer(question) {
 }
 
 function getAnswer(question) {
-    var answer;
+    let answer;
 
     switch (question.type) {
         case 'multiplication':
