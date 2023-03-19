@@ -11,7 +11,7 @@ const globals = {
     },
 }
 
-function startGame(e) {
+function startGame() {
     const parsedUrl = new URL(window.location.href);
     const questionTypes = parsedUrl.searchParams.getAll('question_types');
     const multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
@@ -28,7 +28,7 @@ function startGame(e) {
     document.querySelector('.js-show-answer').addEventListener('click', function() { renderAnswer(question) });
     const yourAnswer = document.querySelectorAll('.js-your-answer');
     yourAnswer.forEach(function(answerBtn) {
-        answerBtn.addEventListener('click', function(e) { handleRightWrong(e) });
+        answerBtn.addEventListener('click', function(e) { handleEvaluation(e) });
     });
 
     newQuestion();
@@ -97,10 +97,21 @@ function getExcludeNums(type, numDigits) {
     return excludeNums;
 }
 
+/**
+ * Return a random number between 0 and 9
+ * @returns {integer}
+ */
 function getRandomDigit() {
     return Math.round(Math.random() * 9);
 }
 
+/**
+ * Return a random number with the number of digits given
+ * 0 will not be used for the first digit and any number in excludeNums will not be used
+ * @param {integer} numDigits 
+ * @param {array} excludeNums 
+ * @returns {integer}
+ */
 function getNumber(numDigits, excludeNums = []) {
     let number = '';
 
@@ -115,6 +126,11 @@ function getNumber(numDigits, excludeNums = []) {
     return parseInt(number);
 }
 
+/**
+ * Get the symbol for the given mathematical string
+ * @param {string} type 
+ * @returns {string}
+ */
 function getSymbol(type) {
     let symbol;
 
@@ -158,6 +174,11 @@ function renderAnswer(question) {
     updateAverageTimeToAnswer();
 }
 
+/**
+ * Return the answer for the given question
+ * @param {object} question 
+ * @returns {integer}
+ */
 function getAnswer(question) {
     let answer;
 
@@ -178,6 +199,11 @@ function getAnswer(question) {
     return answer;
 }
 
+/**
+ * Return a random lement from the given array
+ * @param {array} arr 
+ * @returns {*}
+ */
 function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -199,7 +225,7 @@ function stopTimer() {
     globals.intervalId = false;
 }
 
-function handleRightWrong(e) {
+function handleEvaluation(e) {
     const answer = e.target.getAttribute('data-your-answer');
     if (answer === 'right') {
         globals.game.score.correct++;
