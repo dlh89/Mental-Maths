@@ -1,38 +1,50 @@
-const globals = {
-    game: {
-        questionTypes: [],
-        timer: false,
-        intervalId: false,
-        score: {
-            correct: 0,
-            incorrect: 0,
-        },
-        answerTimes: [],
-        question: {},
-    },
-}
-
 class Main
 {   
-    startGame() {
+    static arithmeticTypes = [
+        'multiplication',
+        'addition',
+        'subtraction',
+    ];
+
+    constructor() {
         const parsedUrl = new URL(window.location.href);
         const questionTypes = parsedUrl.searchParams.getAll('question_types');
         const multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
         const additionDigits = parsedUrl.searchParams.getAll('addition_digits');
         const subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
         const includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
+
+        this.validateQuestionTypes(questionTypes);
     
-        globals.game['questionTypes'] = questionTypes;
-        globals.game['multiplicationDigits'] = multiplicationDigits;
-        globals.game['additionDigits'] = additionDigits;
-        globals.game['subtractionDigits'] = subtractionDigits;
-        globals.game['includeSubtractionNegatives'] = includeSubtractionNegatives;
-    
+        this.questionTypes = questionTypes;
+        this.multiplicationDigits = multiplicationDigits;
+        this.additionDigits = additionDigits;
+        this.subtractionDigits = subtractionDigits;
+        this.includeSubtractionNegatives = includeSubtractionNegatives;
+        
+        this.score = {
+            correct: 0,
+            incorrect: 0,
+        };
+
+        this.timer = false;
+        this.intervalId = false;
+        this.answerTimes = [];
+        this.question = {};
+        this.type;
+    }
+
+    validateQuestionTypes() {
+        if (!Main.arithmeticTypes.includes(this.type)) {
+            console.error('Question type doesn\'t exist.');
+        }
+    }
+
+    startGame() {
         document.querySelector('.js-show-answer').addEventListener('click', this.renderAnswer.bind(this));
         const yourAnswer = document.querySelectorAll('.js-your-answer');
 
         yourAnswer.forEach(answerBtn => {
-            console.log('answerBtn:', answerBtn);
             answerBtn.addEventListener('click', (e) => this.handleEvaluation.call(this, e));
         });
     
@@ -40,11 +52,12 @@ class Main
     }
     
     newQuestion() {
-        const type = this.getRandomElement(globals.game['questionTypes']);
-        const numDigits = this.getRandomElement(globals.game[type + 'Digits']);
+        this.type = this.getRandomElement(this.questionTypes);
+        const arithmeticTypeDigits = this.getArithmeticTypeDigits();
+        const numDigits = this.getRandomElement(arithmeticTypeDigits);
         const digitsArr = this.getDigitsArr(numDigits);
-        const question = this.generateQuestion(type, ...digitsArr);
-        if (type === 'subtraction' && !globals.game['includeSubtractionNegatives']) {
+        const question = this.generateQuestion(this.type, ...digitsArr);
+        if (this.type === 'subtraction' && !this.includeSubtractionNegatives) {
             if (question.second > question.first) {
                 // Re-order the question so the largest number is on the left hand side
                 const tempSecond = question.second;
@@ -52,9 +65,29 @@ class Main
                 question.first = tempSecond;
             }
         }
-        globals.game.question = question;
+        this.question = question;
         this.renderQuestion(question);
         this.startTimer();
+    }
+
+    getArithmeticTypeDigits() {
+        let arithmeticTypeDigits = false;
+
+        switch (this.type) {
+            case 'multiplication':
+                arithmeticTypeDigits = this.multiplicationDigits;
+                break;
+            case 'addition':
+                arithmeticTypeDigits = this.additionDigits;
+                break;
+            case 'subtraction':
+                arithmeticTypeDigits = this.subtractionDigits;
+                break;
+            default:
+                break;
+        }
+
+        return arithmeticTypeDigits;
     }
     
     /**
@@ -169,14 +202,14 @@ class Main
     
     renderAnswer() {
         this.stopTimer();
-        const answer = this.getAnswer(globals.game.question);
+        const answer = this.getAnswer(this.question);
         document.querySelector('.js-show-answer').style.display = 'none';
         document.querySelector('.js-answer-text').style.display = 'inline-block';
         document.querySelector('.js-answer-text').textContent = answer;
     
         document.querySelector('.js-right-wrong').style.display = 'block';
     
-        this.updateAnswerHelp(globals.game.question);
+        this.updateAnswerHelp(this.question);
         this.updateAverageTimeToAnswer();
     }
     
@@ -206,7 +239,7 @@ class Main
     }
     
     /**
-     * Return a random lement from the given array
+     * Return a random element from the given array
      * @param {array} arr 
      * @returns {*}
      */
@@ -215,31 +248,30 @@ class Main
     }
     
     startTimer() {
-        if (!globals.intervalId) {        
-            globals.timer = 0;
-            document.querySelector('.js-timer').textContent = globals.timer;
+        if (!this.intervalId) {        
+            this.timer = 0;
+            document.querySelector('.js-timer').textContent = this.timer;
         }
     
-        globals.intervalId = window.setInterval(function() {
-            globals.timer++;
-            document.querySelector('.js-timer').textContent = globals.timer;
+        this.intervalId = window.setInterval(() => {
+            this.timer++;
+            document.querySelector('.js-timer').textContent = this.timer;
         }, 1000);
     }
     
     stopTimer() {
-        window.clearInterval(globals.intervalId);
-        globals.intervalId = false;
+        window.clearInterval(this.intervalId);
+        this.intervalId = false;
     }
     
     handleEvaluation(e) {
-        console.log('handleEval');
         const answer = e.target.getAttribute('data-your-answer');
         if (answer === 'right') {
-            globals.game.score.correct++;
-            document.querySelector('.js-correct-score').textContent = globals.game.score.correct;
+            this.score.correct++;
+            document.querySelector('.js-correct-score').textContent = this.score.correct;
         } else {
-            globals.game.score.incorrect++;
-            document.querySelector('.js-incorrect-score').textContent = globals.game.score.incorrect;
+            this.score.incorrect++;
+            document.querySelector('.js-incorrect-score').textContent = this.score.incorrect;
         }
     
         document.querySelector('.js-right-wrong').style.display = 'none';
@@ -247,11 +279,11 @@ class Main
     }
     
     updateAverageTimeToAnswer() {
-        globals.game.answerTimes.push(parseInt(document.querySelector('.js-timer').textContent));
-        const totalAnswerTime = globals.game.answerTimes.reduce(function(accumulator, answerTime) {
+        this.answerTimes.push(parseInt(document.querySelector('.js-timer').textContent));
+        const totalAnswerTime = this.answerTimes.reduce((accumulator, answerTime) => {
             return accumulator + answerTime;
         }, 0);
-        const averageTimeToAnswer = Math.round(totalAnswerTime / globals.game.answerTimes.length);
+        const averageTimeToAnswer = Math.round(totalAnswerTime / this.answerTimes.length);
         document.querySelector('.js-average-time').textContent = averageTimeToAnswer;
     }
     
