@@ -1,6 +1,31 @@
 export class Utils
 {
     /**
+     * Get the symbol for the given mathematical string
+     * @param {string} type 
+     * @returns {string}
+     */
+    getSymbol(type) {
+        let symbol;
+    
+        switch (type) {
+            case 'multiplication':
+                symbol = 'x';
+                break;
+            case 'addition':
+                symbol = '+';
+                break;
+            case 'subtraction':
+                symbol = '-';
+                break;
+            default:
+                break;
+        }
+    
+        return symbol;
+    }
+
+    /**
      * Return a random element from the given array
      * @param {array} arr 
      * @returns {*}
@@ -63,5 +88,44 @@ export class Utils
      */
     getDigit(number, digit) {
         return parseInt(number.toString()[digit]);
+    }
+
+    swapQuestion(question) {
+        const tempSecond = question.second;
+        question.second = question.first;
+        question.first = tempSecond;
+
+        return question;
+    }
+
+     /**
+     * Return a string of the question and answer, e.g. "70 x 66 = 4620"
+     * @param {object} question 
+     * @returns {string}
+     */
+     getQuestionAndAnswerText(question) {
+        const answer = this.getAnswer(question);
+
+        return `${question.first} ${this.getSymbol(question.type)} ${question.second} = ${answer}`;
+    }
+
+    /**
+     * Build a string of text with a line for each question and answer, skipping questions where operands are 0 or 1
+     * @param {array} questions 
+     * @returns {string}
+     */
+    buildHelpText(questions) {
+        let helpText = '';
+        const skipOperands = [0, 1];
+
+        for (const question of questions) {
+            if (skipOperands.includes(question.first) || skipOperands.includes(question.second)) {
+                continue;
+            }
+
+            helpText += '\n' + this.getQuestionAndAnswerText(question);
+        }
+
+        return helpText;
     }
 }

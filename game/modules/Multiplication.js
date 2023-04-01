@@ -196,6 +196,23 @@ export class Multiplication
     
         return closestSecondDigitToTen;
     }
+
+    maybeReOrderAdditionQuestion(question) {
+        let isSwapRequired = false;
+
+        if (this.utils.getDigit(question.first, 1) === this.utils.getDigit(question.second, 1)) {
+            // use whichever has largest first digit to make the addition easier
+            isSwapRequired = this.utils.getDigit(question.second, 0) > this.utils.getDigit(question.first, 0) ? true : false;
+        } else if (this.utils.getDigit(question.first, 1) > this.utils.getDigit(question.second, 1)) {
+            isSwapRequired = true;   
+        }
+
+        if (isSwapRequired) {
+            question = this.utils.swapQuestion(question);
+        }
+
+        return question;
+    }
     
     getMultiplicationAdditionMethodHelpTextWithLabel(question) {
         let answerHelp = 'Answer method: addition';
@@ -203,37 +220,57 @@ export class Multiplication
     
         return answerHelp;
     }
-    
+
     getMultiplicationAdditionMethodHelpText(question) {
-        const closestSecondDigitToTen = this.getClosestSecondDigitToTen(question);
-        
-        let leftMultiplier, rightMultiplier;
-        if (closestSecondDigitToTen === 'first') {
-            leftMultiplier = question.first;
-            rightMultiplier = question.second;
-        } else {
-            leftMultiplier = question.second;
-            rightMultiplier = question.first;
-        }
+        const reOrderedQuestion = this.maybeReOrderAdditionQuestion(question);
+        const roundedDownQuestion = this.getRoundedDownQuestion(reOrderedQuestion);
+        const SecondDigitMultiplicationQuestion = this.getSecondDigitMultiplicationQuestion(reOrderedQuestion);
+        const additionQuestion = this.getAdditionQuestion(this.utils.getAnswer(roundedDownQuestion), this.utils.getAnswer(SecondDigitMultiplicationQuestion));
+
+        const helpText = this.utils.buildHelpText([
+            roundedDownQuestion,
+            SecondDigitMultiplicationQuestion,
+            additionQuestion,
+        ]);
+
+        return helpText;
+    }
+
+    /**
+     * Round down the second digit of the first operand of the question, e.g. 74 x 66 becomes 70 x 66
+     * @param {object} 
+     * @returns {object}
+     */
+    getRoundedDownQuestion({first, ...rest}) {
+        const firstRoundedDown = this.utils.getDigit(first, 0) * 10;
+
+        return {first: firstRoundedDown, ...rest};
+    }
     
-        const leftFirstDigitMultiplier = leftMultiplier === 100 ? 100 : this.utils.getDigit(leftMultiplier, 0) * 10;
-        const leftSecondDigit = this.utils.getDigit(leftMultiplier, 1);
-        const rightFirstDigitMultiplier = this.utils.getDigit(rightMultiplier, 0) * 10;
-        const rightSecondDigit = this.utils.getDigit(rightMultiplier, 1);
-    
-        const stepOne = leftFirstDigitMultiplier * rightFirstDigitMultiplier;
-        const stepTwo = leftFirstDigitMultiplier * rightSecondDigit;
-        const stepThree = stepOne + stepTwo;
-        const stepFour = leftSecondDigit * rightMultiplier;
-        const stepFive = stepThree + stepFour
-    
-        
-        let answerHelp = leftFirstDigitMultiplier > 1 && rightFirstDigitMultiplier > 1 ? `\n${leftFirstDigitMultiplier} * ${rightFirstDigitMultiplier} = ${stepOne}` : '';
-        answerHelp += leftFirstDigitMultiplier > 1 && rightSecondDigit > 1 ? `\n${leftFirstDigitMultiplier} * ${rightSecondDigit} = ${stepTwo}` : '';
-        answerHelp += stepOne && stepTwo ? `\n${stepOne} + ${stepTwo} + ${stepThree}` : '';
-        answerHelp += leftSecondDigit > 1 && rightMultiplier > 1 ? `\n${leftSecondDigit} * ${rightMultiplier} = ${stepFour}` : '';
-        answerHelp += stepThree && stepFour ? `\n${stepThree} + ${stepFour} = ${stepFive}` : '';
-    
-        return answerHelp;
+    /**
+     * Round the second digit question for a multiplication question, e.g. 74 x 66 becomes 4 x 66
+     * @param {object} 
+     * @returns {object}
+     */
+    getSecondDigitMultiplicationQuestion({first, ...rest}) {
+        const firstSecondDigit = this.utils.getDigit(first, 1); // Just the second digit of the first operand
+
+        return {first: firstSecondDigit, ...rest};
+    }
+
+    /**
+     * Get an addition question object from the first and second numbers provided
+     * @param {integer} first 
+     * @param {integer} second 
+     * @returns {object}
+     */
+    getAdditionQuestion(first, second) {
+        const additionQuestion = {
+            'first': first,
+            'second': second,
+            'type': 'addition',
+        };
+
+        return additionQuestion;
     }
 }

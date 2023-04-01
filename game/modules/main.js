@@ -103,7 +103,7 @@ export class Main
         const firstNumExcludeNums = this.getExcludeNums(type, firstNumDigits);
         const secondNumExcludeNums = this.getExcludeNums(type, secondNumDigits);
         const first = this.getNumber(firstNumDigits, firstNumExcludeNums);
-        const second = this.getNumber(secondNumDigits, secondNumExcludeNums);    
+        const second = this.getNumber(secondNumDigits, secondNumExcludeNums);
     
         const question = {
             'first': first,
@@ -166,33 +166,8 @@ export class Main
         return parseInt(number);
     }
     
-    /**
-     * Get the symbol for the given mathematical string
-     * @param {string} type 
-     * @returns {string}
-     */
-    getSymbol(type) {
-        let symbol;
-    
-        switch (type) {
-            case 'multiplication':
-                symbol = 'x';
-                break;
-            case 'addition':
-                symbol = '+';
-                break;
-            case 'subtraction':
-                symbol = '-';
-                break;
-            default:
-                break;
-        }
-    
-        return symbol;
-    }
-    
     renderQuestion(question) {
-        const symbol = this.getSymbol(question.type);
+        const symbol = this.utils.getSymbol(question.type);
         const questionText = `${question.first} ${symbol} ${question.second}`;
     
         document.querySelector('.js-answer-help').textContent = '';
