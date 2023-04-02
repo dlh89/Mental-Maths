@@ -150,34 +150,61 @@ export class Multiplication
     
     getMultiplicationSubtractionMethodHelpText(question) {
         let answerHelp = `Method: subtraction`;
+
+        question = this.maybeReorderSubtractionQuestion(question);
     
-        const subtractionQuestion = this.getSubtractionMethodQuestion(question);
-        answerHelp += this.getMultiplicationAdditionMethodHelpText(subtractionQuestion);
+        const roundedUpQuestion = this.getRoundedUpQuestion(question);
+        answerHelp += this.getMultiplicationAdditionMethodHelpText(roundedUpQuestion);
     
         // Add the subtraction part
-        const keyOfNumberToRoundUp = this.getClosestSecondDigitToTen(question);
-        const multiplicationToSubtract = 10 - (this.utils.getDigit(question[keyOfNumberToRoundUp], 1) % 10);
-        const keyOfNumberToSubtract = keyOfNumberToRoundUp === 'first' ? 'second' : 'first';
-        const amountToSubtract = multiplicationToSubtract * question[keyOfNumberToSubtract];
-        const amountToSubtractQuestionText = multiplicationToSubtract > 1 ? `${multiplicationToSubtract} * ${subtractionQuestion.second} = ` : '';
-        const subtractionQuestionAnswer = this.utils.getAnswer(subtractionQuestion);
-        const finalAnswer = subtractionQuestionAnswer - amountToSubtract;
-        answerHelp += `\nAmount to subtract: ${amountToSubtractQuestionText} ${amountToSubtract}
-        Answer: ${subtractionQuestionAnswer} - ${amountToSubtract} = ${finalAnswer}`;
+        const amountToSubtractQuestion = this.getAmountToSubtractQuestion(question);
+        const subtractionQuestion = this.getSubtractionQuestion(this.utils.getAnswer(roundedUpQuestion), this.utils.getAnswer(amountToSubtractQuestion));
+
+        answerHelp += this.utils.buildHelpText([amountToSubtractQuestion, subtractionQuestion]);
     
         return answerHelp;
     }
+
+    maybeReorderSubtractionQuestion(question) {
+        let isSwapRequired = false;
+
+        if (this.utils.getDigit(question.first, 1) === this.utils.getDigit(question.second, 1)) {
+            // use whichever has largest first digit to make the subsequent subtraction easier
+            isSwapRequired = this.utils.getDigit(question.second, 0) > this.utils.getDigit(question.first, 0) ? true : false;
+        } else if (this.utils.getDigit(question.first, 1) < this.utils.getDigit(question.second, 1)) {
+            isSwapRequired = true;
+        }
+
+        if (isSwapRequired) {
+            question = this.utils.swapQuestion(question);
+        }
+
+        return question;
+    }
     
-    getSubtractionMethodQuestion(question) {
-        const keyOfNumberToRoundUp = this.getClosestSecondDigitToTen(question);
-        const firstRoundedUp = question[keyOfNumberToRoundUp] + (10 - question[keyOfNumberToRoundUp] % 10);
+    getRoundedUpQuestion(question) {
+        const roundedUpQuestion = {...question};
+        const firstRoundedUp = question.first + (10 - question.first % 10);
+        roundedUpQuestion.first = firstRoundedUp;
     
+        return roundedUpQuestion;
+    }
+
+    getAmountToSubtractQuestion(question) {
+        const amountToSubtractQuestion = {...question};
+        amountToSubtractQuestion.first = 10 - this.utils.getDigit(question.first, 1);
+        amountToSubtractQuestion.firstNumDigits = 1;
+
+        return amountToSubtractQuestion;
+    }
+
+    getSubtractionQuestion(first, second) {
         const subtractionQuestion = {
-            type: 'multiplication',
-            first: firstRoundedUp,
-            second: keyOfNumberToRoundUp === 'first' ? question.second : question.first,
+            first,
+            second,
+            type: 'subtraction',
         };
-    
+
         return subtractionQuestion;
     }
     
@@ -201,7 +228,7 @@ export class Multiplication
         let isSwapRequired = false;
 
         if (this.utils.getDigit(question.first, 1) === this.utils.getDigit(question.second, 1)) {
-            // use whichever has largest first digit to make the addition easier
+            // use whichever has largest first digit to make the subsequent addition easier
             isSwapRequired = this.utils.getDigit(question.second, 0) > this.utils.getDigit(question.first, 0) ? true : false;
         } else if (this.utils.getDigit(question.first, 1) > this.utils.getDigit(question.second, 1)) {
             isSwapRequired = true;   
