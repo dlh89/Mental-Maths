@@ -1,4 +1,5 @@
 import { Multiplication } from './Multiplication.js';
+import { Results } from './Results.js';
 import { Utils } from './Utils.js';
 
 export class Main
@@ -24,8 +25,8 @@ export class Main
         this.includeSubtractionNegatives = includeSubtractionNegatives;
         
         this.score = {
-            correct: 0,
-            incorrect: 0,
+            correct: [],
+            incorrect: [],
         };
 
         this.timer = false;
@@ -38,6 +39,7 @@ export class Main
 
         this.utils = new Utils();
         this.multiplication = new Multiplication();
+        this.results = new Results();
     }
 
     validateQuestionTypes() {
@@ -56,6 +58,8 @@ export class Main
         yourAnswer.forEach(answerBtn => {
             answerBtn.addEventListener('click', (e) => this.handleEvaluation.call(this, e));
         });
+
+        document.querySelector('.js-end-session').addEventListener('click', this.handleEndSession.bind(this));
     
         this.newQuestion();
     }
@@ -209,11 +213,11 @@ export class Main
     handleEvaluation(e) {
         const answer = e.target.getAttribute('data-your-answer');
         if (answer === 'right') {
-            this.score.correct++;
-            document.querySelector('.js-correct-score').textContent = this.score.correct;
+            this.score.correct.push(this.question);
+            document.querySelector('.js-correct-score').textContent = this.score.correct.length;
         } else {
-            this.score.incorrect++;
-            document.querySelector('.js-incorrect-score').textContent = this.score.incorrect;
+            this.score.incorrect.push(this.question);
+            document.querySelector('.js-incorrect-score').textContent = this.score.incorrect.length;
         }
     
         document.querySelector('.js-right-wrong').style.display = 'none';
@@ -237,6 +241,14 @@ export class Main
         }
     
         document.querySelector('.js-answer-help').innerText = answerHelp;
+    }
+
+    handleEndSession() {
+        const shouldEndSession = confirm('Are you sure you want to end the session?');
+        if (!shouldEndSession) {
+            return;
+        }
+        this.results.parseResults(this.score);
     }
 }
 
