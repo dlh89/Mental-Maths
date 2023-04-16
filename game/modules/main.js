@@ -248,7 +248,7 @@ export class Main
         if (!shouldEndSession) {
             return;
         }
-        this.results.parseResults(this.score);
+        this.results.renderResults(this.score);
     }
 }
 

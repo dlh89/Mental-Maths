@@ -128,4 +128,12 @@ export class Utils
 
         return helpText;
     }
+
+    isInArray(arr, searchItem) {
+        return arr.some(item => JSON.stringify(item) === JSON.stringify(searchItem));
+    }
+
+    getPercentageString(numerator, denominator) {
+        return Math.round(numerator / denominator * 100) + '%';
+    }
 }
