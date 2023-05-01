@@ -6,14 +6,35 @@ export class Results
     }
 
     renderResults(results) {
-        const answersByTypeString = this.getAnswersByTypeString(results);
-        document.querySelector('.js-results-by-type').innerText = answersByTypeString;
+        const numberOfQuestionVariations = this.getNumberOfQuestionVariations();
+
+        if (numberOfQuestionVariations > 1) {
+            const answersByTypeString = this.getAnswersByTypeString(results);
+            document.querySelector('.js-results-by-type').innerText = answersByTypeString;
+        }
 
         const overallAnswersString = this.getOverallAnswersString(results);
         document.querySelector('.js-results-overall').innerText = overallAnswersString;
 
         document.querySelector('.js-game').style.display = 'none';
         document.querySelector('.js-results').style.display = 'block';
+    }
+
+    getNumberOfQuestionVariations() {
+        const parsedUrl = new URL(window.location.href);
+        const multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
+        const additionDigits = parsedUrl.searchParams.getAll('addition_digits');
+        const subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
+
+        const allQuestionVariationCounts = [
+            multiplicationDigits.length,
+            additionDigits.length,
+            subtractionDigits.length,
+        ];
+
+        const numberOfQuestionVariations = allQuestionVariationCounts.reduce((accumulator, questionType) => accumulator + questionType, 0);
+        
+        return numberOfQuestionVariations;
     }
 
     getAnswersByTypeString(results) {
