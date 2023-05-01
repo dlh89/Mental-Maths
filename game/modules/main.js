@@ -211,6 +211,7 @@ export class Main
     }
     
     handleEvaluation(e) {
+        this.maybeUnhideEndSessionBtn();
         const answer = e.target.getAttribute('data-your-answer');
         if (answer === 'right') {
             this.score.correct.push(this.question);
@@ -222,6 +223,16 @@ export class Main
     
         document.querySelector('.js-right-wrong').style.display = 'none';
         this.newQuestion();
+    }
+
+    /**
+     * Show the end session button if it is hidden
+     */
+    maybeUnhideEndSessionBtn() {
+        const endSessionBtn = document.querySelector('.js-end-session');
+        if (!endSessionBtn.classList.contains('end-session-btn--active')) {
+            endSessionBtn.classList.add('end-session-btn--active');
+        }
     }
     
     updateAverageTimeToAnswer() {
@@ -244,6 +255,10 @@ export class Main
     }
 
     handleEndSession() {
+        if (!this.score.correct.length && !this.score.incorrect.length) {
+            return; // No questions have been answered yet
+        }
+
         const shouldEndSession = confirm('Are you sure you want to end the session?');
         if (!shouldEndSession) {
             return;

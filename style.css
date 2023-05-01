@@ -75,6 +75,14 @@ label {
     margin-right: 6px;
 }
 
+.end-session-btn {
+    display: none;
+}
+
+.end-session-btn--active {
+    display: block;
+}
+
 .results {
     display: none;
 }
