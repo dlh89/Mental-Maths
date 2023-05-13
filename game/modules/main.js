@@ -17,6 +17,8 @@ export class Main
         const additionDigits = parsedUrl.searchParams.getAll('addition_digits');
         const subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
         const includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
+        const repeatIncorrectQuestions = parsedUrl.searchParams.get('repeat_incorrect_questions');
+        const questionRepeatGap = parsedUrl.searchParams.get('repeat_gap');
     
         this.questionTypes = questionTypes;
         this.multiplicationDigits = multiplicationDigits;
@@ -34,8 +36,8 @@ export class Main
         this.answerTimes = [];
         this.question = {};
         this.type;
-        this.repeatIncorrectQuestions = true;
-        this.questionRepeatGap = 1;
+        this.repeatIncorrectQuestions = repeatIncorrectQuestions;
+        this.questionRepeatGap = questionRepeatGap;
         this.questionsSinceRepeat = 0;
         this.queue = [];
 

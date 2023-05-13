@@ -125,13 +125,21 @@
                                         <label for="subtraction_4x4">4 by 4</label>
                                     </div>
                                     <div>
-                                        <input type="checkbox" name="include_negatives" id="subtraction_include_negatives" value="1" class="js-child-field">
+                                        <input type="checkbox" name="include_negatives" id="subtraction_include_negatives" class="js-child-field">
                                         <label for="subtraction_include_negatives">Include questions with negative results</label>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
                     </fieldset>
+                    <div>
+                        <input type="checkbox" name="repeat_incorrect_questions" id="repeat_incorrect_questions" class="js-parent-field" checked>
+                        <label for="repeat_incorrect_questions">Repeat incorrectly answered questions</label>
+                        <fieldset class="type-subset">
+                            <input type="number" name="repeat_gap" id="repeat_gap" class="js-child-field" value="1">
+                            <label for="repeat_gap">Gap between repeated questions</label>
+                        </fieldset>
+                    </div>
                     <input type="submit" value="Start" class="btn btn-primary btn-lg">
                 </form>
             </div>
