@@ -12,19 +12,14 @@ export class Main
 
     constructor() {
         const parsedUrl = new URL(window.location.href);
-        const questionTypes = parsedUrl.searchParams.getAll('question_types');
-        const multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
-        const additionDigits = parsedUrl.searchParams.getAll('addition_digits');
-        const subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
-        const includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
-        const repeatIncorrectQuestions = parsedUrl.searchParams.get('repeat_incorrect_questions');
-        const questionRepeatGap = parsedUrl.searchParams.get('repeat_gap');
     
-        this.questionTypes = questionTypes;
-        this.multiplicationDigits = multiplicationDigits;
-        this.additionDigits = additionDigits;
-        this.subtractionDigits = subtractionDigits;
-        this.includeSubtractionNegatives = includeSubtractionNegatives;
+        this.questionTypes = parsedUrl.searchParams.getAll('question_types');
+        this.multiplicationDigits = parsedUrl.searchParams.getAll('multiplication_digits');
+        this.additionDigits = parsedUrl.searchParams.getAll('addition_digits');
+        this.subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
+        this.includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
+        this.repeatIncorrectQuestions = parsedUrl.searchParams.get('repeat_incorrect_questions');
+        this.questionRepeatGap = parsedUrl.searchParams.get('repeat_gap');
         
         this.score = {
             correct: [],
@@ -36,12 +31,11 @@ export class Main
         this.answerTimes = [];
         this.question = {};
         this.type;
-        this.repeatIncorrectQuestions = repeatIncorrectQuestions;
-        this.questionRepeatGap = questionRepeatGap;
+    
         this.questionsSinceRepeat = 0;
         this.queue = [];
 
-        this.validateQuestionTypes(questionTypes);
+        this.validateQuestionTypes(this.questionTypes);
 
         this.utils = new Utils();
         this.multiplication = new Multiplication();
@@ -78,8 +72,8 @@ export class Main
                     this.questionsSinceRepeat = 0;
                 }
             } else {
-                this.questionsSinceRepeat++;
                 this.getNewQuestion();
+                this.questionsSinceRepeat++;
             }
         } else {
             this.getNewQuestion();
