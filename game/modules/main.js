@@ -34,6 +34,10 @@ export class Main
         this.answerTimes = [];
         this.question = {};
         this.type;
+        this.repeatIncorrectQuestions = true;
+        this.questionRepeatGap = 1;
+        this.questionsSinceRepeat = 0;
+        this.queue = [];
 
         this.validateQuestionTypes(questionTypes);
 
@@ -61,10 +65,29 @@ export class Main
 
         document.querySelector('.js-end-session').addEventListener('click', this.handleEndSession.bind(this));
     
-        this.newQuestion();
+        this.nextQuestion();
+    }
+
+    nextQuestion() {
+        if (this.queue.length) {
+            if (this.questionsSinceRepeat >= this.questionRepeatGap) {
+                this.question = this.queue.shift();
+                if (!this.queue.length) {
+                    this.questionsSinceRepeat = 0;
+                }
+            } else {
+                this.questionsSinceRepeat++;
+                this.getNewQuestion();
+            }
+        } else {
+            this.getNewQuestion();
+        }
+
+        this.renderQuestion(this.question);
+        this.startTimer();
     }
     
-    newQuestion() {
+    getNewQuestion() {
         this.type = this.utils.getRandomElement(this.questionTypes);
         const arithmeticTypeDigits = this.getArithmeticTypeDigits();
         const numDigits = this.utils.getRandomElement(arithmeticTypeDigits);
@@ -79,8 +102,6 @@ export class Main
             }
         }
         this.question = question;
-        this.renderQuestion(question);
-        this.startTimer();
     }
 
     getArithmeticTypeDigits() {
@@ -219,10 +240,14 @@ export class Main
         } else {
             this.score.incorrect.push(this.question);
             document.querySelector('.js-incorrect-score').textContent = this.score.incorrect.length;
+
+            if (this.repeatIncorrectQuestions) {
+                this.queue.push(this.question);
+            }
         }
     
         document.querySelector('.js-right-wrong').style.display = 'none';
-        this.newQuestion();
+        this.nextQuestion();
     }
 
     /**
