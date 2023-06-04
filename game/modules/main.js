@@ -19,7 +19,6 @@ export class Main
         this.subtractionDigits = parsedUrl.searchParams.getAll('subtraction_digits');
         this.includeSubtractionNegatives = parsedUrl.searchParams.get('include_negatives');
         this.repeatIncorrectQuestions = parsedUrl.searchParams.get('repeat_incorrect_questions');
-        this.questionRepeatGap = parsedUrl.searchParams.get('repeat_gap');
         
         this.score = {
             correct: [],
@@ -66,7 +65,7 @@ export class Main
 
     nextQuestion() {
         if (this.queue.length) {
-            if (this.questionsSinceRepeat >= this.questionRepeatGap) {
+            if (this.questionsSinceRepeat >= 1) {
                 this.question = this.queue.shift();
                 if (!this.queue.length) {
                     this.questionsSinceRepeat = 0;
