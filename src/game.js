@@ -267,17 +267,8 @@ export class Game
             }
         }
     
-        this.pushResultToDb();
         document.querySelector('.js-right-wrong').style.display = 'none';
         this.nextQuestion();
-    }
-
-    pushResultToDb() {
-        // TODO push to firestore if logged in?
-        if (this.userId) {
-            // TODO instead of pushing this.question, include result, time taken etc.
-            firebaseService.firestore.collection(`users/${userId}/results`).add(this.question);
-        }
     }
 
     /**
@@ -319,6 +310,10 @@ export class Game
             return;
         }
         this.results.renderResults(this.score);
+
+        if (this.userId) {
+            firebaseService.pushResultsToDb(this.userId, this.score);
+        }
     }
 }
 

@@ -11,8 +11,11 @@ import {
 } from 'firebase/auth';
 import {
     getFirestore,
+    connectFirestoreEmulator,
     doc,
     setDoc,
+    getDoc,
+    collection,
 } from 'firebase/firestore';// https://firebase.google.com/docs/web/setup#available-libraries
 
 export class FirebaseService {
@@ -36,7 +39,8 @@ export class FirebaseService {
         this.analytics = getAnalytics(app);
         this.auth = getAuth(app);
         this.db = getFirestore(app);
-        connectAuthEmulator(this.auth, 'http://localhost:9099');
+        // connectAuthEmulator(this.auth, 'http://localhost:9099');
+        // connectFirestoreEmulator(this.db, 'http://localhost:8080');
 
         const monitorAuthState = async () => {
             onAuthStateChanged(this.auth, user => {
@@ -62,12 +66,21 @@ export class FirebaseService {
     async createAccount(loginEmail, loginPassword) {
         try {
             const userCredential = await createUserWithEmailAndPassword(this.auth, loginEmail, loginPassword);
-            console.log('userCredential:', userCredential);
+
+            await setDoc(doc(this.db, 'users', userCredential.user.uid), {
+                email: user.email,
+            });
 
             return userCredential;
         } catch (error) {
             console.error('Error signing up:', error);
         }
+    }
+
+    async pushResultsToDb(userId, results) {
+        const userDocRef = doc(this.db, 'users', userId);
+        const userCollectionRef = collection(userDocRef, 'results');
+        await setDoc(doc(userCollectionRef), results);
     }
 }
 
