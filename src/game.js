@@ -1,6 +1,7 @@
 import { Multiplication } from './multiplication.js';
 import { Results } from './results.js';
 import { Utils } from './utils.js';
+import firebaseService from './firebase-service.js';
 
 export class Game
 {   
@@ -43,8 +44,27 @@ export class Game
         this.utils = new Utils();
         this.multiplication = new Multiplication();
         this.results = new Results();
+        this.userId;
 
-        this.startGame();
+        this.handleLoggedInUserSetup();
+    }
+
+    handleLoggedInUserSetup() {
+        // TODO make game available even if logged out?
+        firebaseService.auth.onAuthStateChanged((user) => {
+            if (user) {
+              // User is signed in, you can access the user object to retrieve user info
+              console.log('User is logged in:', user);
+
+              this.userId = firebaseService.auth.currentUser.uid;
+
+              // You can start the game or do whatever you need
+              this.startGame();
+            } else {
+              // No user is signed in
+              console.log('User is not logged in');
+            }
+        });
     }
 
     validateQuestionTypes() {
@@ -247,8 +267,17 @@ export class Game
             }
         }
     
+        this.pushResultToDb();
         document.querySelector('.js-right-wrong').style.display = 'none';
         this.nextQuestion();
+    }
+
+    pushResultToDb() {
+        // TODO push to firestore if logged in?
+        if (this.userId) {
+            // TODO instead of pushing this.question, include result, time taken etc.
+            firebaseService.firestore.collection(`users/${userId}/results`).add(this.question);
+        }
     }
 
     /**
