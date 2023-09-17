@@ -28,6 +28,10 @@ export class Game
         this.score = {
             correct: [],
             incorrect: [],
+            metaData: {
+                startTime: null,
+                endTime: null,
+            }
         };
 
         this.timer = false;
@@ -80,6 +84,7 @@ export class Game
         });
 
         document.querySelector('.js-end-session').addEventListener('click', this.handleEndSession.bind(this));
+        this.score.metaData.startTime = new Date().getTime();
     
         this.nextQuestion();
     }
@@ -305,6 +310,7 @@ export class Game
             return;
         }
         this.results.renderResults(this.score);
+        this.score.metaData.endTime = new Date().getTime();
 
         if (this.userId) {
             firebaseService.pushResultsToDb(this.userId, this.score);
