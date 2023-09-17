@@ -50,20 +50,15 @@ export class Game
     }
 
     handleLoggedInUserSetup() {
-        // TODO make game available even if logged out?
         firebaseService.auth.onAuthStateChanged((user) => {
             if (user) {
               // User is signed in, you can access the user object to retrieve user info
               console.log('User is logged in:', user);
 
               this.userId = firebaseService.auth.currentUser.uid;
-
-              // You can start the game or do whatever you need
-              this.startGame();
-            } else {
-              // No user is signed in
-              console.log('User is not logged in');
             }
+
+            this.startGame();
         });
     }
 

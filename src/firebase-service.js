@@ -46,6 +46,7 @@ export class FirebaseService {
             onAuthStateChanged(this.auth, user => {
                 if (user !== null) {
                     console.log('logged in!');
+                    console.log('user:', user);
                 } else {
                     console.log('no user');
                 }
