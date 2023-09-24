@@ -13,53 +13,47 @@ export class Login
             const loginPassword = document.querySelector('.js-password').value;
         
             try {
-                await firebaseService.login(loginEmail, loginPassword)
+                await firebaseService.login(loginEmail, loginPassword);
+                window.location.href = '/';
             }
             catch (error) {
                 console.log(error);
+                const errorMessage = getErrorMessageFromFirebaseError(error);
+                const errorNoticeElem = document.querySelector('.js-error-notice');
+                if (errorNoticeElem) {
+                    errorNoticeElem.textContent = errorMessage;
+                    errorNoticeElem.classList.remove('hidden');
+                } else {
+                    errorNoticeElem.classList.add('hidden');
+                }
+            }        
+        }
+
+        const getErrorMessageFromFirebaseError = (error) => {
+            let errorMessage;
+
+            switch (error.code) {
+                case 'auth/wrong-password':
+                case 'auth/user-not-found':
+                    errorMessage = 'Incorrect email or password.';
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = 'This user account has been disabled.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Invalid email format.';
+                    break;
+                default:
+                    errorMessage = 'An unknown error occurred.';
             }
-        
+
+            return errorMessage;
         }
         
-        const loginBtn = document.querySelector('.js-login-btn');
-        loginBtn.addEventListener('click', e => {
+        loginForm.addEventListener('submit', e => {
             e.preventDefault();
             loginEmailPassword();
         });
-        
-        const registerBtn = document.querySelector('.js-register-btn');
-        registerBtn.addEventListener('click', e => {
-            e.preventDefault();
-            createAccount();
-        });
-    
-        const createAccount = async () => {
-            const loginEmail = document.querySelector('.js-email').value;
-            const loginPassword = document.querySelector('.js-password').value;
-        
-            try {
-                const userCredentail = await firebaseService.createAccount(loginEmail, loginPassword);
-                console.log(userCredentail.user);
-            }
-            catch (error) {
-                console.log(error);
-            }
-        }
-    
-        
-        const logoutBtn = document.querySelector('.js-logout-btn');
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            logoutHandler();
-        });
-
-        const logoutHandler = async () => {
-            try {
-                await firebaseService.logout();
-            } catch (error) {
-                console.log('error:', error);
-            }
-        }
     }
 }
 

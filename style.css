@@ -86,3 +86,24 @@ label {
 .results {
     display: none;
 }
+
+.hidden {
+    display: none;
+}
+
+.notice--error {
+    color: #cd3d64;
+    font-weight: 700;
+}
+
+.header--logged-in .header__login-btn {
+    display: none;
+}
+
+.header--logged-in .header__logout-btn {
+    display: block;
+}
+
+.header__logout-btn {
+    display: none;
+}

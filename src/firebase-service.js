@@ -50,10 +50,18 @@ export class FirebaseService {
                 } else {
                     console.log('no user');
                 }
+
+                if (this.authStateChangedCallback) {
+                    this.authStateChangedCallback(user);
+                }
             });
         }
 
         monitorAuthState();
+    }
+
+    setAuthStateChangedCallback(callback) {
+        this.authStateChangedCallback = callback;
     }
 
     login(loginEmail, loginPassword) {
@@ -65,17 +73,12 @@ export class FirebaseService {
     }
 
     async createAccount(loginEmail, loginPassword) {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(this.auth, loginEmail, loginPassword);
+        const userCredential = await createUserWithEmailAndPassword(this.auth, loginEmail, loginPassword);
+        await setDoc(doc(this.db, 'users', userCredential.user.uid), {
+            email: userCredential.user.email,
+        });
 
-            await setDoc(doc(this.db, 'users', userCredential.user.uid), {
-                email: user.email,
-            });
-
-            return userCredential;
-        } catch (error) {
-            console.error('Error signing up:', error);
-        }
+        return userCredential;
     }
 
     async pushResultsToDb(userId, results) {
