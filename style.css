@@ -121,3 +121,16 @@ label {
 .header__logout-btn {
     display: none;
 }
+
+.header__link--logged-in {
+    display: none;
+}
+
+.header--logged-in .header__link--logged-in {
+    display: block;
+}
+
+.header__nav {
+    display: flex;
+    gap: 20px;
+}
