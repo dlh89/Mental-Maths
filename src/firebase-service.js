@@ -15,6 +15,7 @@ import {
     doc,
     setDoc,
     getDoc,
+    getDocs,
     collection,
 } from 'firebase/firestore';// https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -85,6 +86,13 @@ export class FirebaseService {
         const userDocRef = doc(this.db, 'users', userId);
         const userCollectionRef = collection(userDocRef, 'results');
         await setDoc(doc(userCollectionRef), results);
+    }
+
+    async getStats(userId) {
+        const userDocRef = doc(this.db, 'users', userId);
+        const resultsCollectionRef = collection(userDocRef, 'results');
+
+        return await getDocs(resultsCollectionRef);;
     }
 }
 
