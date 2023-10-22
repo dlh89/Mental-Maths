@@ -253,6 +253,8 @@ export class Game
     handleEvaluation(e) {
         this.maybeUnhideEndSessionBtn();
         const answer = e.target.getAttribute('data-your-answer');
+        this.question.timeToAnswer = this.timer;
+
         if (answer === 'right') {
             this.score.correct.push(this.question);
             document.querySelector('.js-correct-score').textContent = this.score.correct.length;

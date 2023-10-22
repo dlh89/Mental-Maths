@@ -26,28 +26,43 @@
     </div>
     <div class="container">
         <h1>Stats</h1>
-        <h2>Session history</h2>
-        <div class="js-stats-container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Start time</th>
-                        <th scope="col">End time</th>
-                        <th scope="col">Score</th>
-                        <th scope="col">Correct percentage</th>
-                    </tr>
-                </thead>
-                <tbody class="js-results-tbody">
-                    <tr class="js-results-row">
-                        <td class="js-results-date"></td>
-                        <td class="js-results-start-time"></td>
-                        <td class="js-results-end-time"></td>
-                        <td class="js-results-score"></td>
-                        <td class="js-results-percentage"></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div>
+            <h2>Global</h2>
+            <h3>Overall correct answer percentage</h3>
+            <p class="js-overall-correct-percentage"></p>
+            <h3>Total time played</h3>
+            <p class="js-total-time-played"></p>
+            <h3>Average time to answer</h3>
+            <p class="js-average-time-to-answer"></p>
+        </div>
+        <div>
+            <h2>Session history</h2>
+            <div class="js-stats-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Start time</th>
+                            <th scope="col">End time</th>
+                            <th scope="col">Score</th>
+                            <th scope="col">Correct percentage</th>
+                            <th scope="col">Average time to answer</th>
+                            <th scope="col">Session length</th>
+                        </tr>
+                    </thead>
+                    <tbody class="js-results-tbody">
+                        <tr class="js-results-row">
+                            <td class="js-results-date"></td>
+                            <td class="js-results-start-time"></td>
+                            <td class="js-results-end-time"></td>
+                            <td class="js-results-score"></td>
+                            <td class="js-results-percentage"></td>
+                            <td class="js-average-time-to-answer"></td>
+                            <td class="js-session-length"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
