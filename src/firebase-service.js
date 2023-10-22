@@ -17,6 +17,8 @@ import {
     getDoc,
     getDocs,
     collection,
+    orderBy,
+    query,
 } from 'firebase/firestore';// https://firebase.google.com/docs/web/setup#available-libraries
 
 export class FirebaseService {
@@ -89,10 +91,12 @@ export class FirebaseService {
     }
 
     async getStats(userId) {
+        // TODO can we sort by date?
         const userDocRef = doc(this.db, 'users', userId);
         const resultsCollectionRef = collection(userDocRef, 'results');
+        const queryRef = query(resultsCollectionRef, orderBy('endTime', 'desc'));
 
-        return await getDocs(resultsCollectionRef);;
+        return await getDocs(queryRef);
     }
 }
 

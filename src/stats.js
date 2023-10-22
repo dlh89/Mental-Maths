@@ -32,8 +32,8 @@ export class Stats
             const resultsEndTime = resultsRowClone.querySelector('.js-results-end-time');
             const resultsScore = resultsRowClone.querySelector('.js-results-score');
             const resultsPercentage = resultsRowClone.querySelector('.js-results-percentage');
-            const startTime = resultData?.metaData?.startTime;
-            const endTime = resultData?.metaData?.endTime;
+            const startTime = resultData?.startTime;
+            const endTime = resultData?.endTime;
             resultsDate.textContent = startTime ? new Date(startTime).toLocaleDateString() : '';
             resultsStartTime.textContent = startTime ? new Date(startTime).toLocaleTimeString() : '';
             resultsEndTime.textContent = endTime ? new Date(endTime).toLocaleTimeString() : '';
