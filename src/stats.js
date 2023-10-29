@@ -1,7 +1,20 @@
 import firebaseService from './firebase-service.js';
+import Chart from 'chart.js/auto';
 
 export class Stats
 {
+    formattedStats = {
+        'sessions': [],
+        'totals': {
+            'totalCorrectAnswers': 0,
+            'totalIncorrectAnswers': 0,
+            'totalTimeToAnswer': 0,
+            'totalTimePlayed': 0,
+            'totalQuestionsAnswered': 0,
+        }
+    };
+
+
     constructor() {
         const statsContainer = document.querySelector('.js-stats-container');
         if (!statsContainer) {
@@ -19,59 +32,37 @@ export class Stats
 
     async populateStats() {
         const playerStats = await firebaseService.getStats(this.userId);
-        this.populateGlobalStats(playerStats);
-        const resultsTbody = document.querySelector('.js-results-tbody');
-        const resultsRow = document.querySelector('.js-results-row');
-        let totalCorrectAnswers = 0;
-        let totalIncorrectAnswers = 0;
-        let totalTimeToAnswer = 0;
-        let totalTimePlayed = 0;
-        let totalQuestionsAnswered = 0;
-
+       
         playerStats.forEach((result) => {
             const resultData = result.data();
             const sessionQuestionsAnswered = resultData.correct.length + resultData.incorrect.length;
-            totalQuestionsAnswered += sessionQuestionsAnswered;
-            totalCorrectAnswers += resultData.correct.length;
-            totalIncorrectAnswers += resultData.incorrect.length;
+            this.formattedStats.totals.totalCorrectAnswers += resultData.correct.length;
+            this.formattedStats.totals.totalIncorrectAnswers += resultData.incorrect.length;
+            this.formattedStats.totals.totalQuestionsAnswered += sessionQuestionsAnswered;
             const sessionLength = Math.abs(resultData.endTime - resultData.startTime);
-            totalTimePlayed += sessionLength;
+            this.formattedStats.totals.totalTimePlayed += sessionLength;
             const correctPercentageString = Math.round(resultData.correct.length / (resultData.correct.length + resultData.incorrect.length) * 100) + '%';
             const sessionTotalTimeToAnswer = this.getTotalTimeToAnswer(resultData);
-            totalTimeToAnswer += sessionTotalTimeToAnswer;
+            this.formattedStats.totals.totalTimeToAnswer += sessionTotalTimeToAnswer;
 
-            const resultsRowClone = resultsRow.cloneNode(true);
-            const resultsDate = resultsRowClone.querySelector('.js-results-date');
-            const resultsStartTime = resultsRowClone.querySelector('.js-results-start-time');
-            const resultsEndTime = resultsRowClone.querySelector('.js-results-end-time');
-            const resultsScore = resultsRowClone.querySelector('.js-results-score');
-            const resultsPercentage = resultsRowClone.querySelector('.js-results-percentage');
-            const sessionLengthElem = resultsRowClone.querySelector('.js-session-length');
-            const averageTimeToAnswerElem = resultsRowClone.querySelector('.js-average-time-to-answer');
-            const startTime = resultData?.startTime;
-            const endTime = resultData?.endTime;
-            resultsDate.textContent = startTime ? new Date(startTime).toLocaleDateString('en-GB') : '';
-            resultsStartTime.textContent = startTime ? new Date(startTime).toLocaleTimeString() : '';
-            resultsEndTime.textContent = endTime ? new Date(endTime).toLocaleTimeString() : '';
-            resultsScore.textContent = `${resultData.correct.length} / ${resultData.correct.length + resultData.incorrect.length}`;
-            resultsPercentage.textContent = correctPercentageString;
-            sessionLengthElem.textContent = this.getFormattedMilliseconds(sessionLength);
-            averageTimeToAnswerElem.textContent = this.getFormattedMilliseconds((sessionTotalTimeToAnswer / sessionQuestionsAnswered) * 1000);
-
-            resultsTbody.appendChild(resultsRowClone);
+            this.formattedStats.sessions.push(
+                {
+                    'sessionQuestionsAnswered': sessionQuestionsAnswered,
+                    'sessionLength': sessionLength,
+                    'correctPercentageString': correctPercentageString,
+                    'sessionTotalTimeToAnswer': sessionTotalTimeToAnswer,
+                    'startDate': new Date(resultData.startTime).toLocaleDateString('en-GB'),
+                    'startTime': new Date(resultData.startTime).toLocaleTimeString(),
+                    'endTime': new Date(resultData.endTime).toLocaleTimeString(),
+                    'correctAnswers': resultData.correct.length,
+                    'incorrectAnswers': resultData.incorrect.length,
+                },
+            );
         });
 
-        const overallCorrectPercentageElem = document.querySelector('.js-overall-correct-percentage');
-        overallCorrectPercentageElem.textContent = Math.round((totalCorrectAnswers / (totalCorrectAnswers + totalIncorrectAnswers)) * 100) + '%';
-        const totalTimePlayedElem = document.querySelector('.js-total-time-played');
-        totalTimePlayedElem.textContent = this.getFormattedMilliseconds(totalTimePlayed);
-        const averageTimeToAnswer = document.querySelector('.js-average-time-to-answer');
-        averageTimeToAnswer.textContent = this.getFormattedMilliseconds((totalTimeToAnswer / totalQuestionsAnswered) * 1000);
-
-        resultsRow.style.display = 'none';
-    }
-
-    populateGlobalStats(playerStats) {
+        this.populateGlobalStats();
+        this.populateTable();
+        this.populateChart();
     }
 
     getFormattedMilliseconds(timeInMilliseconds) {
@@ -97,6 +88,79 @@ export class Stats
         totalTimeToAnswer += resultData.incorrect.reduce((accumulator, answer) => accumulator += answer.timeToAnswer, 0);
 
         return totalTimeToAnswer;
+    }
+
+    populateGlobalStats() {
+        const overallCorrectPercentageElem = document.querySelector('.js-overall-correct-percentage');
+        overallCorrectPercentageElem.textContent = Math.round((this.formattedStats.totals.totalCorrectAnswers / (this.formattedStats.totals.totalCorrectAnswers + this.formattedStats.totals.totalIncorrectAnswers)) * 100) + '%';
+        const totalTimePlayedElem = document.querySelector('.js-total-time-played');
+        totalTimePlayedElem.textContent = this.getFormattedMilliseconds(this.formattedStats.totals.totalTimePlayed);
+        const averageTimeToAnswer = document.querySelector('.js-average-time-to-answer');
+        averageTimeToAnswer.textContent = this.getFormattedMilliseconds((this.formattedStats.totals.totalTimeToAnswer / this.formattedStats.totals.totalQuestionsAnswered) * 1000);
+    }
+
+    populateTable() {
+        const resultsTbody = document.querySelector('.js-results-tbody');
+        const resultsRow = document.querySelector('.js-results-row');
+
+        this.formattedStats.sessions.forEach((session) => {
+            const resultsRowClone = resultsRow.cloneNode(true);
+            const resultsDate = resultsRowClone.querySelector('.js-results-date');
+            const resultsStartTime = resultsRowClone.querySelector('.js-results-start-time');
+            const resultsEndTime = resultsRowClone.querySelector('.js-results-end-time');
+            const resultsScore = resultsRowClone.querySelector('.js-results-score');
+            const resultsPercentage = resultsRowClone.querySelector('.js-results-percentage');
+            const sessionLengthElem = resultsRowClone.querySelector('.js-session-length');
+            const averageTimeToAnswerElem = resultsRowClone.querySelector('.js-average-time-to-answer');
+
+            resultsDate.textContent = session.startDate;
+            resultsStartTime.textContent = session.startTime,
+            resultsEndTime.textContent = session.endTime,
+            resultsScore.textContent = `${session.correctAnswers} / ${session.correctAnswers + session.incorrectAnswers}`;
+            resultsPercentage.textContent = session?.correctPercentageString;
+            sessionLengthElem.textContent = this.getFormattedMilliseconds(session?.sessionLength);
+            averageTimeToAnswerElem.textContent = this.getFormattedMilliseconds((session?.sessionTotalTimeToAnswer / session?.sessionQuestionsAnswered) * 1000);
+            resultsTbody.appendChild(resultsRowClone);
+        })
+
+        resultsRow.style.display = 'none';
+    }
+
+    populateChart() {
+        const correctAnswersCtx = document.getElementById('correctAnswersChart');
+        const timeToAnswerCtx = document.getElementById('timeToAnswerChart');
+
+        new Chart(correctAnswersCtx, {
+            type: 'line',
+            data: {
+                labels: this.formattedStats.sessions.map(session => session.startDate),
+                datasets: [
+                    {
+                        label: 'Correct answers percentage',
+                        data: this.formattedStats.sessions.map(session => (session.correctAnswers / session.sessionQuestionsAnswered) * 100),
+                        fill: false,
+                        borderColor: 'rgb(0 116 57)',
+                        tension: 0
+                    },
+                ]
+            }
+        });
+
+        new Chart(timeToAnswerCtx, {
+            type: 'line',
+            data: {
+                labels: this.formattedStats.sessions.map(session => session.startDate),
+                datasets: [
+                    {
+                        label: 'Average time to answer',
+                        data: this.formattedStats.sessions.map(session => session.sessionTotalTimeToAnswer / (session.incorrectAnswers + session.correctAnswers)),
+                        fill: false,
+                        borderColor: 'rgb(0 116 57)',
+                        tension: 0
+                    },
+                ]
+            }
+        });
     }
 }
 

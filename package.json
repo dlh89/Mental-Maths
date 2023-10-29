@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/dlh89/Mental-Maths#readme",
   "dependencies": {
+    "chart.js": "^4.4.0",
     "firebase": "^9.22.1",
     "firebaseui": "^6.0.2"
   },
