@@ -130,6 +130,10 @@ label {
     display: block;
 }
 
+.header__link--active {
+    font-weight: 600;
+}
+
 .header__nav {
     display: flex;
     gap: 20px;
