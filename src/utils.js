@@ -136,4 +136,21 @@ export class Utils
     getPercentageString(numerator, denominator) {
         return Math.round(numerator / denominator * 100) + '%';
     }
+
+    getFormattedMilliseconds(timeInMilliseconds) {
+        const hours = Math.floor(timeInMilliseconds / (1000 * 60 * 60));
+        timeInMilliseconds = timeInMilliseconds % (1000 * 60 * 60);
+      
+        const minutes = Math.floor(timeInMilliseconds / (1000 * 60));
+        timeInMilliseconds = timeInMilliseconds % (1000 * 60);
+      
+        const seconds = Math.floor(timeInMilliseconds / 1000);
+      
+        // Format numbers as two-digit strings
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+      
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    }
 }

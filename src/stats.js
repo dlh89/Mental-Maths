@@ -1,5 +1,6 @@
 import firebaseService from './firebase-service.js';
 import Chart from 'chart.js/auto';
+import { Utils } from './utils.js';
 
 export class Stats
 {
@@ -16,6 +17,7 @@ export class Stats
 
 
     constructor() {
+        this.utils = new Utils();
         const statsContainer = document.querySelector('.js-stats-container');
         if (!statsContainer) {
             return;
@@ -65,23 +67,6 @@ export class Stats
         this.populateChart();
     }
 
-    getFormattedMilliseconds(timeInMilliseconds) {
-        const hours = Math.floor(timeInMilliseconds / (1000 * 60 * 60));
-        timeInMilliseconds = timeInMilliseconds % (1000 * 60 * 60);
-      
-        const minutes = Math.floor(timeInMilliseconds / (1000 * 60));
-        timeInMilliseconds = timeInMilliseconds % (1000 * 60);
-      
-        const seconds = Math.floor(timeInMilliseconds / 1000);
-      
-        // Format numbers as two-digit strings
-        const formattedHours = String(hours).padStart(2, '0');
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(seconds).padStart(2, '0');
-      
-        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-    }
-
     getTotalTimeToAnswer(resultData) {
         let totalTimeToAnswer = 0;
         totalTimeToAnswer += resultData.correct.reduce((accumulator, answer) => accumulator += answer.timeToAnswer, 0);
@@ -94,9 +79,9 @@ export class Stats
         const overallCorrectPercentageElem = document.querySelector('.js-overall-correct-percentage');
         overallCorrectPercentageElem.textContent = Math.round((this.formattedStats.totals.totalCorrectAnswers / (this.formattedStats.totals.totalCorrectAnswers + this.formattedStats.totals.totalIncorrectAnswers)) * 100) + '%';
         const totalTimePlayedElem = document.querySelector('.js-total-time-played');
-        totalTimePlayedElem.textContent = this.getFormattedMilliseconds(this.formattedStats.totals.totalTimePlayed);
+        totalTimePlayedElem.textContent = this.utils.getFormattedMilliseconds(this.formattedStats.totals.totalTimePlayed);
         const averageTimeToAnswer = document.querySelector('.js-average-time-to-answer');
-        averageTimeToAnswer.textContent = this.getFormattedMilliseconds((this.formattedStats.totals.totalTimeToAnswer / this.formattedStats.totals.totalQuestionsAnswered) * 1000);
+        averageTimeToAnswer.textContent = this.utils.getFormattedMilliseconds((this.formattedStats.totals.totalTimeToAnswer / this.formattedStats.totals.totalQuestionsAnswered) * 1000);
     }
 
     populateTable() {
@@ -118,8 +103,8 @@ export class Stats
             resultsEndTime.textContent = session.endTime,
             resultsScore.textContent = `${session.correctAnswers} / ${session.correctAnswers + session.incorrectAnswers}`;
             resultsPercentage.textContent = session?.correctPercentageString;
-            sessionLengthElem.textContent = this.getFormattedMilliseconds(session?.sessionLength);
-            averageTimeToAnswerElem.textContent = this.getFormattedMilliseconds((session?.sessionTotalTimeToAnswer / session?.sessionQuestionsAnswered) * 1000);
+            sessionLengthElem.textContent = this.utils.getFormattedMilliseconds(session?.sessionLength);
+            averageTimeToAnswerElem.textContent = this.utils.getFormattedMilliseconds((session?.sessionTotalTimeToAnswer / session?.sessionQuestionsAnswered) * 1000);
             resultsTbody.appendChild(resultsRowClone);
         })
 
@@ -129,6 +114,7 @@ export class Stats
     populateChart() {
         const correctAnswersCtx = document.getElementById('correctAnswersChart');
         const timeToAnswerCtx = document.getElementById('timeToAnswerChart');
+        this.formattedStats.sessions.reverse(); // reverse the data to make it chronological
 
         new Chart(correctAnswersCtx, {
             type: 'line',
