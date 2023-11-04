@@ -143,6 +143,13 @@ export class Stats
                         tension: 0
                     },
                 ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        suggestedMin: 0,
+                    }
+                }
             }
         });
 
