@@ -125,7 +125,7 @@ export class Stats
                         label: 'Correct answers percentage',
                         data: this.formattedStats.sessions.map(session => (session.correctAnswers / session.sessionQuestionsAnswered) * 100),
                         fill: false,
-                        borderColor: 'rgb(0 116 57)',
+                        borderColor: 'rgb(13 110 253)',
                         tension: 0
                     },
                 ]
@@ -148,7 +148,7 @@ export class Stats
                         label: 'Average time to answer',
                         data: this.formattedStats.sessions.map(session => session.sessionTotalTimeToAnswer / (session.incorrectAnswers + session.correctAnswers)),
                         fill: false,
-                        borderColor: 'rgb(0 116 57)',
+                        borderColor: 'rgb(13 110 253)',
                         tension: 0
                     },
                 ]
