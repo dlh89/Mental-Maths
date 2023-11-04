@@ -1,4 +1,5 @@
 import { Utils } from './utils.js';
+
 export class Results
 {
     constructor() {
@@ -15,6 +16,12 @@ export class Results
 
         const overallAnswersString = this.getOverallAnswersString(results);
         document.querySelector('.js-results-overall').innerText = overallAnswersString;
+
+        document.querySelector('.js-average-time-to-answer').innerText = document.querySelector('.js-average-time').textContent + ' seconds';
+
+        const sessionLength = Math.abs(results.endTime - results.startTime);
+
+        document.querySelector('.js-session-length').innerText = this.utils.getFormattedMilliseconds(sessionLength);
 
         document.querySelector('.js-game').style.display = 'none';
         document.querySelector('.js-results').style.display = 'block';

@@ -309,8 +309,8 @@ export class Game
         if (!shouldEndSession) {
             return;
         }
-        this.results.renderResults(this.score);
         this.score.endTime = new Date().getTime();
+        this.results.renderResults(this.score);
 
         if (this.userId) {
             firebaseService.pushResultsToDb(this.userId, this.score);
