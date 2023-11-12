@@ -153,4 +153,16 @@ export class Utils
       
         return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
     }
+
+    animateLoadingEllipsis() {
+        let ellipsisElems = document.querySelectorAll('.js-loading-ellipsis');
+
+        for (const ellipsisElem of ellipsisElems) {
+            let count = 0;
+            ellipsisElem.intervalId = setInterval(() => {
+                ellipsisElem.textContent = '.'.repeat(count % 3 + 1);
+                count++;
+            }, 200);
+        }
+    }
 }

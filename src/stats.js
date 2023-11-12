@@ -23,6 +23,8 @@ export class Stats
             return;
         }
 
+        this.utils.animateLoadingEllipsis();
+
         firebaseService.auth.onAuthStateChanged((user) => {
             if (user) {
               this.userId = firebaseService.auth.currentUser.uid;
@@ -62,6 +64,7 @@ export class Stats
             );
         });
 
+        this.clearLoadingEllipsis();
         this.populateGlobalStats();
         this.populateTable();
         this.populateChart();
@@ -154,6 +157,14 @@ export class Stats
                 ]
             }
         });
+    }
+
+    clearLoadingEllipsis() {
+        let ellipsisElems = document.querySelectorAll('.js-loading-ellipsis');
+        for (const ellipsisElem of ellipsisElems) {
+            ellipsisElem.classList.remove('js-loading-ellipsis');
+            clearInterval(ellipsisElem.intervalId)
+        }
     }
 }
 
