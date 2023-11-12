@@ -54,14 +54,25 @@
             </div>
             <div class="tab-pane fade mb-5" id="charts">
                 <h2 class="mb-4">Charts</h2>
+                <ul class="nav nav-pills mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#correct-percentage">Correct answer
+                            percentage</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#average-time">Average time to answer</a>
+                    </li>
+                </ul>
                 <div class="chart">
-                    <div class="mb-5">
-                        <h3>Correct answer percentage</h3>
-                        <canvas id="correctAnswersChart" width="400" height="200"></canvas>
-                    </div>
-                    <div>
-                        <h3>Average time to answer</h3>
-                        <canvas id="timeToAnswerChart" width="400" height="200"></canvas>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="correct-percentage">
+                            <h3>Correct answer percentage</h3>
+                            <canvas id="correctAnswersChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="tab-pane fade" id="average-time">
+                            <h3>Average time to answer</h3>
+                            <canvas id="timeToAnswerChart" width="400" height="200"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
