@@ -45,46 +45,63 @@ export class Results
     }
 
     getAnswersByTypeString(results) {
-        const parsedResults = this.getCombinedParsedResults(results);
+        const answersByType = this.getResultsByQuestionType(results);
 
         let answersByTypeString = '';
 
-        for (const result in parsedResults) {
-            answersByTypeString += `<h3>${result}</h3>`;
-            let correctAnswerCount = 0;
-            for (const question of parsedResults[result]) {
-                if (question.correct) {
-                    correctAnswerCount++;
+        for (const type in answersByType) {
+            answersByTypeString += `<h3>${this.firstCharToUpper(type)}</h3>`;
+            for (const numDigits in answersByType[type]) {
+                answersByTypeString += `<h4>${numDigits}</h4>`;
+                let correctAnswerCount = 0;
+                for (const question of answersByType[type][numDigits]) {
+                    if (question.isCorrect) {
+                        correctAnswerCount++;
+                    }
                 }
-            }
 
-            const percentageString = this.utils.getPercentageString(correctAnswerCount, parsedResults[result].length);
-            answersByTypeString += `\n<p>${correctAnswerCount} / ${parsedResults[result].length} (${percentageString})</p>`;
+                const percentageString = this.utils.getPercentageString(correctAnswerCount, answersByType[type][numDigits].length);
+                answersByTypeString += `\n<p>${correctAnswerCount} / ${answersByType[type][numDigits].length} (${percentageString})</p>`;
+            }
         }
         
         return answersByTypeString;
     }
 
-    getCombinedParsedResults(results) {
-        const parsedResults = {};
-        for (const result of results.correct.concat(results.incorrect)) {
-            const question = {
-                type: result.type,
-                firstNumDigits: result.firstNumDigits,
-                secondNumDigits: result.secondNumDigits,
-                correct: this.utils.isInArray(results.correct, result),
-            };
+    firstCharToUpper(str) {
+        return str[0].toUpperCase() + str.slice(1);
+    }
 
-            const fullAnswerTypeString = this.getFullAnswerTypeString(question);
+    getResultsByQuestionType(results) {
+        let resultsByQuestionType = {};
+        results.answers.forEach((answer) => {
+            answer.date = new Date(results.startTime).toLocaleDateString('en-GB'); // TODO not necessary here but needed in charts
+            resultsByQuestionType = this.addPropertyIfNotExists(resultsByQuestionType, answer.type, 'obj');
+            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
+            resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(resultsByQuestionType[answer.type], answer.numDigits);
+            resultsByQuestionType[answer.type][answer.numDigits].push(answer);
+        });
 
-            if (!parsedResults.hasOwnProperty(fullAnswerTypeString)) {
-                parsedResults[fullAnswerTypeString] = [];
+        return resultsByQuestionType;
+    }
+
+    addPropertyIfNotExists(obj, prop, addType = 'arr') {
+        if (!obj.hasOwnProperty(prop)) {
+            switch (addType) {
+                case 'arr':
+                    obj[prop] = [];
+                    break;
+                case 'obj':
+                    obj[prop] = {};
+                    break;
+            
+                default:
+                    obj[prop] = false;
+                    break;
             }
-
-            parsedResults[fullAnswerTypeString].push(question);
         }
 
-        return parsedResults;
+        return obj;
     }
 
     getFullAnswerTypeString(question) {
@@ -94,8 +111,13 @@ export class Results
     }
 
     getOverallAnswersString(results) {
-        const totalCorrectAnswers = results.correct.length;
-        const totalQuestionCount = results.correct.concat(results.incorrect).length;
+        const totalCorrectAnswers = results.answers.reduce((accumulator, answer) => {
+            if (answer.isCorrect) {
+                accumulator++;
+            }
+            return accumulator;
+        }, 0);
+        const totalQuestionCount = results.answers.length;
         const percentageString = this.utils.getPercentageString(totalCorrectAnswers, totalQuestionCount);
         const overallAnswersString = `<h3>Overall</h3>
         <p>${totalCorrectAnswers} / ${totalQuestionCount} (${percentageString})</p>`;
