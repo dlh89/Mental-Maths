@@ -26,10 +26,11 @@ export class Game
         this.repeatIncorrectQuestions = parsedUrl.searchParams.get('repeat_incorrect_questions');
         
         this.score = {
-            correct: [],
-            incorrect: [],
+            answers: [],
             startTime: null,
             endTime: null,
+            correct: 0,
+            incorrect: 0,
         };
 
         this.timer = false;
@@ -254,13 +255,15 @@ export class Game
         this.maybeUnhideEndSessionBtn();
         const answer = e.target.getAttribute('data-your-answer');
         this.question.timeToAnswer = this.timer;
+        this.question.isCorrect = (answer === 'right');
+        this.score.answers.push(this.question);
 
         if (answer === 'right') {
-            this.score.correct.push(this.question);
-            document.querySelector('.js-correct-score').textContent = this.score.correct.length;
+            this.score.correct++;
+            document.querySelector('.js-correct-score').textContent = this.score.correct;
         } else {
-            this.score.incorrect.push(this.question);
-            document.querySelector('.js-incorrect-score').textContent = this.score.incorrect.length;
+            this.score.incorrect++;
+            document.querySelector('.js-incorrect-score').textContent = this.score.incorrect;
 
             if (this.repeatIncorrectQuestions) {
                 this.queue.push(this.question);
@@ -301,7 +304,7 @@ export class Game
     }
 
     handleEndSession() {
-        if (!this.score.correct.length && !this.score.incorrect.length) {
+        if (!this.score.answers.length) {
             return; // No questions have been answered yet
         }
 
