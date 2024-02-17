@@ -256,7 +256,7 @@ export class Game
         const answer = e.target.getAttribute('data-your-answer');
         this.question.timeToAnswer = this.timer;
         this.question.isCorrect = (answer === 'right');
-        this.score.answers.push(this.question);
+        this.score.answers.push({...this.question}); // create a shallow copy to prevent overwriting repeated question values
 
         if (answer === 'right') {
             this.score.correct++;
