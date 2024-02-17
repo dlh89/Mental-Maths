@@ -7,9 +7,6 @@ service cloud.firestore {
       match /results/{resultId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      match /resultsv2/{resultId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
     }
   }
 }

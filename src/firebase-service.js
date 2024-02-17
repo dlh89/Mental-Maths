@@ -86,14 +86,13 @@ export class FirebaseService {
 
     async pushResultsToDb(userId, results) {
         const userDocRef = doc(this.db, 'users', userId);
-        const userCollectionRef = collection(userDocRef, 'resultsv2'); // temp test of new collection
+        const userCollectionRef = collection(userDocRef, 'results');
         await setDoc(doc(userCollectionRef), results);
     }
 
     async getStats(userId) {
-        // TODO can we sort by date?
         const userDocRef = doc(this.db, 'users', userId);
-        const resultsCollectionRef = collection(userDocRef, 'resultsv2'); // temp test of new collection
+        const resultsCollectionRef = collection(userDocRef, 'results');
         const queryRef = query(resultsCollectionRef, orderBy('endTime', 'desc'));
 
         return await getDocs(queryRef);
