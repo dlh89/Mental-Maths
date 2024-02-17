@@ -64,7 +64,7 @@ export class Stats
             return accum += session.answers.length;
         }, 0);
         const overallCorrectPercentageElem = document.querySelector('.js-overall-correct-percentage');
-        overallCorrectPercentageElem.textContent = Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) + '%';
+        overallCorrectPercentageElem.textContent = totalQuestionsAnswered ? Math.round((totalCorrectAnswers / totalQuestionsAnswered) * 100) + '%': 'N/A';
 
         const totalTimePlayed = this.stats.reduce((accum, session) => {
             return accum += this.getSessionLength(session.startTime, session.endTime);
