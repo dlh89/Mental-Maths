@@ -1,6 +1,7 @@
 import firebaseService from './firebase-service.js';
 import Chart from 'chart.js/auto';
 import { Utils } from './utils.js';
+import 'chartjs-adapter-moment';
 
 export class Stats
 {
@@ -16,6 +17,7 @@ export class Stats
     };
 
     stats = [];
+    resultsByQuestionType = {};
 
     constructor() {
         this.utils = new Utils();
@@ -140,31 +142,109 @@ export class Stats
         return new Date(session.startTime).toLocaleDateString('en-GB');
     }
 
+    getStartTime(timestamp) {
+        const startDate = new Date(timestamp).toLocaleDateString('en-GB');
+        const startTime = new Date(timestamp).toLocaleTimeString('en-GB');
+        return `${startDate} ${startTime}`;
+    }
+
+    populateResultsByQuestionType(results) {
+        results.answers.forEach((answer) => {
+            answer.date = new Date(results.startTime).toLocaleDateString('en-GB');
+            this.resultsByQuestionType = this.addPropertyIfNotExists(this.resultsByQuestionType, answer.type, 'obj');
+            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
+            this.resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(this.resultsByQuestionType[answer.type], answer.numDigits);
+            this.resultsByQuestionType[answer.type][answer.numDigits].push(answer);
+        });
+    }
+
+    getSessionResultsByQuestionType(results) {
+        let resultsByQuestionType = {};
+        results.answers.forEach((answer) => {
+            answer.date = new Date(results.startTime).toLocaleDateString('en-GB');
+            answer.dateTime = results.startTime;
+            resultsByQuestionType = this.addPropertyIfNotExists(resultsByQuestionType, answer.type, 'obj');
+            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
+            resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(resultsByQuestionType[answer.type], answer.numDigits);
+            resultsByQuestionType[answer.type][answer.numDigits].push(answer);
+        });
+
+        return resultsByQuestionType;
+    }
+
+    addPropertyIfNotExists(obj, prop, addType = 'arr') {
+        if (!obj.hasOwnProperty(prop)) {
+            switch (addType) {
+                case 'arr':
+                    obj[prop] = [];
+                    break;
+                case 'obj':
+                    obj[prop] = {};
+                    break;
+            
+                default:
+                    obj[prop] = false;
+                    break;
+            }
+        }
+
+        return obj;
+    }
+
+    getCorrectAnswerPercentage(answers) {
+        return (this.getCorrectAnswerCount(answers) / answers.length) * 100;
+    }
+
     populateChart() {
         const correctAnswersCtx = document.getElementById('correctAnswersChart');
         const timeToAnswerCtx = document.getElementById('timeToAnswerChart');
         this.stats.reverse(); // reverse the data to make it chronological
 
+        const sessionResultsByQuestionType = [];
+        this.stats.forEach((session) => {
+            this.populateResultsByQuestionType(session);
+            sessionResultsByQuestionType.push(this.getSessionResultsByQuestionType(session));
+        });
+
+        let datasets = [];
+        // Build data for each of the question types
+        Object.keys(this.resultsByQuestionType).forEach((questionType) => {
+            Object.keys(this.resultsByQuestionType[questionType]).forEach((questionSubtype) => {
+                datasets.push({
+                    label:  `${questionType} ${questionSubtype}`,
+                    data: this.getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
+                    fill: false,
+                    tension: 0
+                });
+            });
+        });
+
         new Chart(correctAnswersCtx, {
             type: 'line',
             data: {
-                labels: this.stats.map(session => this.getSessionStartDate(session)),
-                datasets: [
-                    {
-                        label: 'Correct answers percentage',
-                        data: this.stats.map(session => (this.getCorrectAnswerCount(session.answers) / session.answers.length) * 100),
-                        fill: false,
-                        borderColor: 'rgb(13 110 253)',
-                        tension: 0
-                    },
-                ]
+                labels: this.stats.map(session => session.startTime),
+                datasets
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            tooltipFormat: 'yyyy-MM-DD HH:mm'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
                     y: {
-                        suggestedMin: 0,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
                     }
-                }
+                },
             }
         });
 
@@ -183,6 +263,21 @@ export class Stats
                 ]
             }
         });
+    }
+
+    getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType) {
+        const datasetData = [];
+        sessionResultsByQuestionType.forEach((session) => {
+            if (!session.hasOwnProperty(questionType) || !session[questionType].hasOwnProperty(questionSubtype)) {
+                return;
+            }
+            datasetData.push({
+                x: session[questionType][questionSubtype][0].dateTime,
+                y: (this.getCorrectAnswerCount(session[questionType][questionSubtype]) / session[questionType][questionSubtype].length) * 100,
+            });
+        });
+
+        return datasetData;
     }
 
     clearLoadingEllipsis() {
