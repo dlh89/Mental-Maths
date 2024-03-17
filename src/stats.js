@@ -168,6 +168,14 @@ export class Stats
         });
 
         let datasets = [];
+        // Add overall dataset
+        datasets.push({
+            label: 'Overall',
+            data: this.getOverallData(),
+            fill: false,
+            tension: 0
+        })
+
         // Build data for each of the question types
         Object.keys(this.resultsByQuestionType).forEach((questionType) => {
             Object.keys(this.resultsByQuestionType[questionType]).forEach((questionSubtype) => {
@@ -175,7 +183,8 @@ export class Stats
                     label:  this.utils.getQuestionTypeLabel(questionType, questionSubtype),
                     data: this.getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
                     fill: false,
-                    tension: 0
+                    tension: 0,
+                    hidden: true,
                 });
             });
         });
@@ -219,7 +228,7 @@ export class Stats
                         data: this.stats.map(session => this.getAverageTimeToAnswer(session.answers)),
                         fill: false,
                         borderColor: 'rgb(13 110 253)',
-                        tension: 0
+                        tension: 0,
                     },
                 ]
             }
@@ -235,6 +244,18 @@ export class Stats
             datasetData.push({
                 x: session[questionType][questionSubtype][0].dateTime,
                 y: (this.getCorrectAnswerCount(session[questionType][questionSubtype]) / session[questionType][questionSubtype].length) * 100,
+            });
+        });
+
+        return datasetData;
+    }
+
+    getOverallData() {
+        const datasetData = [];
+        this.stats.forEach((session) => {
+            datasetData.push({
+                x: session['answers'][0].dateTime,
+                y: (this.getCorrectAnswerCount(session['answers']) / session['answers'].length) * 100,
             });
         });
 
