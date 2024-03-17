@@ -45,7 +45,7 @@ export class Results
     }
 
     getAnswersByTypeString(results) {
-        const answersByType = this.getResultsByQuestionType(results);
+        const answersByType = this.utils.getResultsByQuestionType(results);
 
         let answersByTypeString = '';
 
@@ -70,38 +70,6 @@ export class Results
 
     firstCharToUpper(str) {
         return str[0].toUpperCase() + str.slice(1);
-    }
-
-    getResultsByQuestionType(results) {
-        let resultsByQuestionType = {};
-        results.answers.forEach((answer) => {
-            answer.date = new Date(results.startTime).toLocaleDateString('en-GB'); // TODO not necessary here but needed in charts
-            resultsByQuestionType = this.addPropertyIfNotExists(resultsByQuestionType, answer.type, 'obj');
-            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
-            resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(resultsByQuestionType[answer.type], answer.numDigits);
-            resultsByQuestionType[answer.type][answer.numDigits].push(answer);
-        });
-
-        return resultsByQuestionType;
-    }
-
-    addPropertyIfNotExists(obj, prop, addType = 'arr') {
-        if (!obj.hasOwnProperty(prop)) {
-            switch (addType) {
-                case 'arr':
-                    obj[prop] = [];
-                    break;
-                case 'obj':
-                    obj[prop] = {};
-                    break;
-            
-                default:
-                    obj[prop] = false;
-                    break;
-            }
-        }
-
-        return obj;
     }
 
     getFullAnswerTypeString(question) {

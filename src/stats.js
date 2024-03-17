@@ -142,53 +142,14 @@ export class Stats
         return new Date(session.startTime).toLocaleDateString('en-GB');
     }
 
-    getStartTime(timestamp) {
-        const startDate = new Date(timestamp).toLocaleDateString('en-GB');
-        const startTime = new Date(timestamp).toLocaleTimeString('en-GB');
-        return `${startDate} ${startTime}`;
-    }
-
     populateResultsByQuestionType(results) {
         results.answers.forEach((answer) => {
             answer.date = new Date(results.startTime).toLocaleDateString('en-GB');
-            this.resultsByQuestionType = this.addPropertyIfNotExists(this.resultsByQuestionType, answer.type, 'obj');
+            this.resultsByQuestionType = this.utils.addPropertyIfNotExists(this.resultsByQuestionType, answer.type, 'obj');
             answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
-            this.resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(this.resultsByQuestionType[answer.type], answer.numDigits);
+            this.resultsByQuestionType[answer.type] = this.utils.addPropertyIfNotExists(this.resultsByQuestionType[answer.type], answer.numDigits);
             this.resultsByQuestionType[answer.type][answer.numDigits].push(answer);
         });
-    }
-
-    getSessionResultsByQuestionType(results) {
-        let resultsByQuestionType = {};
-        results.answers.forEach((answer) => {
-            answer.date = new Date(results.startTime).toLocaleDateString('en-GB');
-            answer.dateTime = results.startTime;
-            resultsByQuestionType = this.addPropertyIfNotExists(resultsByQuestionType, answer.type, 'obj');
-            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
-            resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(resultsByQuestionType[answer.type], answer.numDigits);
-            resultsByQuestionType[answer.type][answer.numDigits].push(answer);
-        });
-
-        return resultsByQuestionType;
-    }
-
-    addPropertyIfNotExists(obj, prop, addType = 'arr') {
-        if (!obj.hasOwnProperty(prop)) {
-            switch (addType) {
-                case 'arr':
-                    obj[prop] = [];
-                    break;
-                case 'obj':
-                    obj[prop] = {};
-                    break;
-            
-                default:
-                    obj[prop] = false;
-                    break;
-            }
-        }
-
-        return obj;
     }
 
     getCorrectAnswerPercentage(answers) {
@@ -203,7 +164,7 @@ export class Stats
         const sessionResultsByQuestionType = [];
         this.stats.forEach((session) => {
             this.populateResultsByQuestionType(session);
-            sessionResultsByQuestionType.push(this.getSessionResultsByQuestionType(session));
+            sessionResultsByQuestionType.push(this.utils.getResultsByQuestionType(session));
         });
 
         let datasets = [];

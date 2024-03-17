@@ -170,4 +170,37 @@ export class Utils
     getQuestionTypeLabel(questionType, questionSubtype) {
         return `${questionType.charAt(0).toUpperCase() + questionType.slice(1)} ${questionSubtype}`;
     }
+
+    addPropertyIfNotExists(obj, prop, addType = 'arr') {
+        if (!obj.hasOwnProperty(prop)) {
+            switch (addType) {
+                case 'arr':
+                    obj[prop] = [];
+                    break;
+                case 'obj':
+                    obj[prop] = {};
+                    break;
+            
+                default:
+                    obj[prop] = false;
+                    break;
+            }
+        }
+
+        return obj;
+    }
+
+    getResultsByQuestionType(results) {
+        let resultsByQuestionType = {};
+        results.answers.forEach((answer) => {
+            answer.date = new Date(results.startTime).toLocaleDateString('en-GB');
+            answer.dateTime = results.startTime;
+            resultsByQuestionType = this.addPropertyIfNotExists(resultsByQuestionType, answer.type, 'obj');
+            answer.numDigits = `${answer.firstNumDigits}x${answer.secondNumDigits}`;
+            resultsByQuestionType[answer.type] = this.addPropertyIfNotExists(resultsByQuestionType[answer.type], answer.numDigits);
+            resultsByQuestionType[answer.type][answer.numDigits].push(answer);
+        });
+
+        return resultsByQuestionType;
+    }
 }
