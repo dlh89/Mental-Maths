@@ -167,11 +167,11 @@ export class Stats
             sessionResultsByQuestionType.push(this.utils.getResultsByQuestionType(session));
         });
 
-        let datasets = [];
+        let correctAnswersDatasets = [];
         // Add overall dataset
-        datasets.push({
+        correctAnswersDatasets.push({
             label: 'Overall',
-            data: this.getOverallData(),
+            data: this.getOverallCorrectAnswersData(),
             fill: false,
             tension: 0
         })
@@ -179,9 +179,9 @@ export class Stats
         // Build data for each of the question types
         Object.keys(this.resultsByQuestionType).forEach((questionType) => {
             Object.keys(this.resultsByQuestionType[questionType]).forEach((questionSubtype) => {
-                datasets.push({
+                correctAnswersDatasets.push({
                     label:  this.utils.getQuestionTypeLabel(questionType, questionSubtype),
-                    data: this.getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
+                    data: this.getCorrectAnswersDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
                     fill: false,
                     tension: 0,
                     hidden: true,
@@ -193,7 +193,7 @@ export class Stats
             type: 'line',
             data: {
                 labels: this.stats.map(session => session.startTime),
-                datasets
+                datasets: correctAnswersDatasets
             },
             options: {
                 scales: {
@@ -218,24 +218,59 @@ export class Stats
             }
         });
 
+        let avgTimeToAnswerDatasets = [];
+        // Add overall dataset
+        avgTimeToAnswerDatasets.push({
+            label: 'Overall',
+            data: this.getOverallAvgTimeToAnswerData(this.stats),
+            fill: false,
+            tension: 0
+        })
+
+        // Build data for each of the question types
+        Object.keys(this.resultsByQuestionType).forEach((questionType) => {
+            Object.keys(this.resultsByQuestionType[questionType]).forEach((questionSubtype) => {
+                avgTimeToAnswerDatasets.push({
+                    label:  this.utils.getQuestionTypeLabel(questionType, questionSubtype),
+                    data: this.getAvgTimeToAnswerDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
+                    fill: false,
+                    tension: 0,
+                    hidden: true,
+                });
+            });
+        });
+
         new Chart(timeToAnswerCtx, {
             type: 'line',
             data: {
-                labels: this.stats.map(session => this.getSessionStartDate(session)),
-                datasets: [
-                    {
-                        label: 'Average time to answer',
-                        data: this.stats.map(session => this.getAverageTimeToAnswer(session.answers)),
-                        fill: false,
-                        borderColor: 'rgb(13 110 253)',
-                        tension: 0,
+                labels: this.stats.map(session => session.startTime),
+                datasets: avgTimeToAnswerDatasets
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            tooltipFormat: 'yyyy-MM-DD HH:mm'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
                     },
-                ]
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                },
             }
         });
     }
 
-    getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType) {
+    getCorrectAnswersDatasetData(questionType, questionSubtype, sessionResultsByQuestionType) {
         const datasetData = [];
         sessionResultsByQuestionType.forEach((session) => {
             if (!session.hasOwnProperty(questionType) || !session[questionType].hasOwnProperty(questionSubtype)) {
@@ -250,12 +285,39 @@ export class Stats
         return datasetData;
     }
 
-    getOverallData() {
+    getAvgTimeToAnswerDatasetData(questionType, questionSubtype, sessionResultsByQuestionType) {
+        const datasetData = [];
+        sessionResultsByQuestionType.forEach((session) => {
+            if (!session.hasOwnProperty(questionType) || !session[questionType].hasOwnProperty(questionSubtype)) {
+                return;
+            }
+            datasetData.push({
+                x: session[questionType][questionSubtype][0].dateTime,
+                y: this.getAverageTimeToAnswer(session[questionType][questionSubtype]),
+            });
+        });
+
+        return datasetData;
+    }
+
+    getOverallCorrectAnswersData() {
         const datasetData = [];
         this.stats.forEach((session) => {
             datasetData.push({
                 x: session['answers'][0].dateTime,
                 y: (this.getCorrectAnswerCount(session['answers']) / session['answers'].length) * 100,
+            });
+        });
+
+        return datasetData;
+    }
+
+    getOverallAvgTimeToAnswerData() {
+        const datasetData = [];
+        this.stats.forEach((session) => {
+            datasetData.push({
+                x: session['answers'][0].dateTime,
+                y: this.getAverageTimeToAnswer(session['answers']),
             });
         });
 
