@@ -165,4 +165,9 @@ export class Utils
             }, 200);
         }
     }
+
+    // Return the question type with first char uppercase followed by a space and the subtype
+    getQuestionTypeLabel(questionType, questionSubtype) {
+        return `${questionType.charAt(0).toUpperCase() + questionType.slice(1)} ${questionSubtype}`;
+    }
 }

@@ -211,7 +211,7 @@ export class Stats
         Object.keys(this.resultsByQuestionType).forEach((questionType) => {
             Object.keys(this.resultsByQuestionType[questionType]).forEach((questionSubtype) => {
                 datasets.push({
-                    label:  `${questionType} ${questionSubtype}`,
+                    label:  this.utils.getQuestionTypeLabel(questionType, questionSubtype),
                     data: this.getDatasetData(questionType, questionSubtype, sessionResultsByQuestionType),
                     fill: false,
                     tension: 0
