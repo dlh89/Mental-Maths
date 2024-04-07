@@ -86,3 +86,55 @@ label {
 .results {
     display: none;
 }
+
+.hidden {
+    display: none;
+}
+
+.notice--error {
+    color: #cd3d64;
+    font-weight: 700;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #c5c5c5;
+    min-height: 45px;
+    margin-bottom: 30px;
+}
+
+.header__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header--logged-in .header__login-btn {
+    display: none;
+}
+
+.header--logged-in .header__logout-btn {
+    display: block;
+}
+
+.header__logout-btn {
+    display: none;
+}
+
+.header__link--logged-in {
+    display: none;
+}
+
+.header--logged-in .header__link--logged-in {
+    display: block;
+}
+
+.header__link--active {
+    font-weight: 600;
+}
+
+.header__nav {
+    display: flex;
+    gap: 20px;
+}

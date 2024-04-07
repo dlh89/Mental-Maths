@@ -1,0 +1,32 @@
+{
+  "name": "mental-maths",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode=development",
+    "watch": "webpack --mode=development --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlh89/Mental-Maths.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dlh89/Mental-Maths/issues"
+  },
+  "homepage": "https://github.com/dlh89/Mental-Maths#readme",
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-moment": "^1.0.1",
+    "firebase": "^9.22.1",
+    "firebaseui": "^6.0.2",
+    "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.85.0",
+    "webpack-cli": "^5.1.2"
+  }
+}
